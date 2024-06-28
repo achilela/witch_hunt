@@ -12,18 +12,13 @@ modules = {
     'M125': (2, 7), 'M126': (2, 8)
 }
 
-# Create the layout with specified colors
+# Create the layout with specified colors and adjustments
 layout = '''
-<div style='border: 4px solid black; border-radius: 10px; background-color: white; padding: 20px; display: grid; grid-template-columns: repeat(8, 1fr); grid-gap: 10px;'>
+<div style='border: 4px solid black; border-radius: 10px; background-color: white; padding: 20px; display: grid; grid-template-columns: repeat(8, 1fr); grid-gap: 20px;'>
 '''
 
 for module, (row, col) in modules.items():
-    layout += f"<div style='grid-column: {col}; grid-row: {row}; background-color: black; color: white; padding: 20px; text-align: center; border: 1px solid white; border-radius: 10px;'>{module}</div>"
-
-layout += '''
-<div style='grid-column: 1 / span 2; background-color: white; color: black; padding: 20px; text-align: center; border: 1px solid black; border-radius: 10px;'>LQ</div>
-<div style='grid-column: 7 / span 2; background-color: white; color: black; padding: 20px; text-align: center; border: 1px solid black; border-radius: 10px;'>HELI DECK</div>
-'''
+    layout += f"<div style='grid-column: {col}; grid-row: {row}; background-color: black; color: white; padding: 20px; text-align: center; border: 2px solid white; border-radius: 10px;'>{module}</div>"
 
 layout += '</div>'
 
