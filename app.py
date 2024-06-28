@@ -15,7 +15,7 @@ modules = {
 # Create the layout with specified colors and adjustments
 layout = '''
 <div style='display: flex; flex-direction: column; align-items: center;'>
-    <div style='border: 8px solid black; border-radius: 10px; background-color: white; padding: 20px; display: grid; grid-template-columns: repeat(7, 1fr); grid-gap: 20px;'>
+    <div style='border: 8px solid black; border-radius: 10px; background-color: white; padding: 35px; display: grid; grid-template-columns: repeat(7, 1fr); grid-gap: 20px;'>
 '''
 
 for module, (row, col) in modules.items():
