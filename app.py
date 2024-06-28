@@ -3,22 +3,22 @@ import streamlit as st
 # Streamlit app layout
 st.title('FPSO Layout')
 
-# Define the layout and colors for each module
+# Define the layout
 modules = {
-    'M110': (1, 2, 'yellow'), 'M111': (1, 3, 'blue'), 'M112': (1, 4, 'blue'),
-    'M113': (1, 5, 'blue'), 'M114': (1, 6, 'yellow'), 'M115': (1, 7, 'red'),
-    'M116': (1, 8, 'red'), 'M120': (2, 2, 'yellow'), 'M121': (2, 3, 'yellow'),
-    'M122': (2, 4, 'yellow'), 'M123': (2, 5, 'yellow'), 'M124': (2, 6, 'yellow'),
-    'M125': (2, 7, 'yellow'), 'M126': (2, 8, 'yellow')
+    'M110': (1, 2), 'M111': (1, 3), 'M112': (1, 4),
+    'M113': (1, 5), 'M114': (1, 6), 'M115': (1, 7),
+    'M116': (1, 8), 'M120': (2, 2), 'M121': (2, 3),
+    'M122': (2, 4), 'M123': (2, 5), 'M124': (2, 6),
+    'M125': (2, 7), 'M126': (2, 8)
 }
 
 # Create the layout with specified colors
 layout = '''
-<div style='display: grid; grid-template-columns: repeat(8, 1fr); grid-gap: 10px;'>
+<div style='border: 2px solid black; padding: 10px; display: grid; grid-template-columns: repeat(8, 1fr); grid-gap: 10px;'>
 '''
 
-for module, (row, col, color) in modules.items():
-    layout += f"<div style='grid-column: {col}; grid-row: {row}; background-color: {color}; padding: 20px; text-align: center;'>{module}</div>"
+for module, (row, col) in modules.items():
+    layout += f"<div style='grid-column: {col}; grid-row: {row}; background-color: white; padding: 20px; text-align: center; border: 1px solid black;'>{module}</div>"
 
 layout += '</div>'
 
