@@ -23,7 +23,7 @@ for module, (row, col) in modules.items():
 
 layout += '''
     </div>
-    <div style='display: flex; justify-content: flex-end; width: 100%; margin-top: -60px;'>
+    <div style='display: flex; justify-content: flex-end; width: 100%; margin-top: -80px;'>
         <div style='border: 2px solid black; border-radius: 10px; background-color: white; padding: 20px; text-align: center; width: 10%; margin-right: 40px;'>M131 Flare</div>
     </div>
 </div>
