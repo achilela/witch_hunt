@@ -24,7 +24,7 @@ for module, (row, col) in modules.items():
 layout += '''
     </div>
     <div style='display: flex; justify-content: flex-end; width: 100%; margin-top: -210px;'>
-        <div style='border: 4px solid black; border-radius: 10px; background-color: white; padding: 60px; text-align: center; width: 10%; margin-right: -90px;'>M131 Flare</div>
+        <div style='border: 4px solid black; border-radius: 10px; background-color: white; padding: 40px; text-align: center; width: 10%; margin-right: -90px;'>M131 Flare</div>
     </div>
 </div>
 '''
