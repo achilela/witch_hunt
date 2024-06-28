@@ -14,13 +14,25 @@ modules = {
 
 # Create the layout with specified colors and adjustments
 layout = '''
-<div style='border: 4px solid black; border-radius: 10px; background-color: white; padding: 20px; display: grid; grid-template-columns: repeat(8, 1fr); grid-gap: 20px;'>
+<div style='display: flex; flex-direction: column; align-items: center;'>
+    <div style='border: 4px solid black; border-radius: 10px; background-color: white; padding: 20px; display: grid; grid-template-columns: repeat(8, 1fr); grid-gap: 20px;'>
 '''
 
 for module, (row, col) in modules.items():
     layout += f"<div style='grid-column: {col}; grid-row: {row}; background-color: black; color: white; padding: 20px; text-align: center; border: 2px solid white; border-radius: 10px;'>{module}</div>"
 
-layout += '</div>'
+layout += '''
+    </div>
+    <div style='margin-top: 20px; display: flex; justify-content: space-between; width: 100%;'>
+        <div style='flex: 1;'></div>
+        <div style='border: 2px solid black; border-radius: 10px; background-color: white; padding: 20px; text-align: center; width: 16%;'>M131 Flare</div>
+    </div>
+    <div style='margin-top: 20px; display: flex; justify-content: space-between; width: 100%;'>
+        <div style='border: 2px solid black; border-radius: 10px; background-color: white; padding: 20px; text-align: center; width: 16%;'>LQ</div>
+        <div style='flex: 1;'></div>
+    </div>
+</div>
+'''
 
 st.markdown(layout, unsafe_allow_html=True)
 
