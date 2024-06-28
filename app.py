@@ -33,9 +33,9 @@ modules = {
 anomaly_type = st.selectbox('Select Anomaly Type', ['COA1', 'COA2', 'COA3', 'COA4', 'ICOA'])
  
 # Display the modules in the layout
-for module, pos in modules.items():
-    color = get_module_color(module, anomaly_type)
-    st.markdown(f"<div style='grid-area: {pos[0]} / {pos[1]}; background-color: {color}; padding: 20px;'>{module}</div>", unsafe_allow_html=True)
+#for module, pos in modules.items():
+#    color = get_module_color(module, anomaly_type)
+#    st.markdown(f"<div style='grid-area: {pos[0]} / {pos[1]}; background-color: {color}; padding: 20px;'>{module}</div>", unsafe_allow_html=True)
  
 # Additional styles and layout configurations
 st.markdown("""
