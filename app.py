@@ -5,17 +5,17 @@ st.title('CLV FPSO Layout')
 
 # Define the layout
 modules = {
-    'M110': (1, 2), 'M111': (1, 3), 'M112': (1, 4),
-    'M113': (1, 5), 'M114': (1, 6), 'M115': (1, 7),
-    'M116': (1, 8), 'M120': (2, 2), 'M121': (2, 3),
-    'M122': (2, 4), 'M123': (2, 5), 'M124': (2, 6),
-    'M125': (2, 7), 'M126': (2, 8)
+    'M110': (1, 1), 'M111': (1, 2), 'M112': (1, 3),
+    'M113': (1, 4), 'M114': (1, 5), 'M115': (1, 6),
+    'M116': (1, 7), 'M120': (2, 1), 'M121': (2, 2),
+    'M122': (2, 3), 'M123': (2, 4), 'M124': (2, 5),
+    'M125': (2, 6), 'M126': (2, 7)
 }
 
 # Create the layout with specified colors and adjustments
 layout = '''
 <div style='display: flex; flex-direction: column; align-items: center;'>
-    <div style='border: 4px solid black; border-radius: 10px; background-color: white; padding: 20px; display: grid; grid-template-columns: repeat(8, 1fr); grid-gap: 20px;'>
+    <div style='border: 4px solid black; border-radius: 10px; background-color: white; padding: 20px; display: grid; grid-template-columns: repeat(7, 1fr); grid-gap: 20px;'>
 '''
 
 for module, (row, col) in modules.items():
@@ -23,13 +23,8 @@ for module, (row, col) in modules.items():
 
 layout += '''
     </div>
-    <div style='margin-top: 20px; display: flex; justify-content: space-between; width: 95%;'>
-        <div style='border: 2px solid black; border-radius: 10px; background-color: white; padding: 20px; text-align: center; width: 16%; margin-left: 103%;'>M131 Flare</div>
-        <div style='flex: 1;'></div>
-    </div>
-    <div style='margin-top: 20px; display: flex; justify-content: space-between; width: 100%;'>
-        <div style='border: 2px solid black; border-radius: 10px; background-color: white; padding: 20px; text-align: center; width: 16%;'>LQ</div>
-        <div style='flex: 1;'></div>
+    <div style='display: flex; justify-content: flex-end; width: 100%; margin-top: -60px;'>
+        <div style='border: 2px solid black; border-radius: 10px; background-color: white; padding: 20px; text-align: center; width: 10%; margin-right: 40px;'>M131 Flare</div>
     </div>
 </div>
 '''
