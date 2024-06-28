@@ -28,8 +28,8 @@ layout += '''
         <div style='border: 2px solid black; border-radius: 10px; background-color: white; padding: 20px; text-align: center; width: 16%;'>M131 Flare</div>
     </div>
     <div style='margin-top: 20px; display: flex; justify-content: space-between; width: 100%;'>
-        <div style='flex: 1;'></div>
         <div style='border: 2px solid black; border-radius: 10px; background-color: white; padding: 20px; text-align: center; width: 16%;'>LQ</div> 
+        <div style='flex: 1;'></div>
     </div>
 </div>
 '''
