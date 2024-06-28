@@ -14,11 +14,11 @@ modules = {
 
 # Create the layout with specified colors
 layout = '''
-<div style='border: 2px solid black; padding: 10px; display: grid; grid-template-columns: repeat(8, 1fr); grid-gap: 10px;'>
+<div style='border: 2px solid black; background-color: white; padding: 10px; display: grid; grid-template-columns: repeat(8, 1fr); grid-gap: 10px;'>
 '''
 
 for module, (row, col) in modules.items():
-    layout += f"<div style='grid-column: {col}; grid-row: {row}; background-color: white; padding: 20px; text-align: center; border: 1px solid black;'>{module}</div>"
+    layout += f"<div style='grid-column: {col}; grid-row: {row}; background-color: black; color: white; padding: 20px; text-align: center; border: 1px solid white;'>{module}</div>"
 
 layout += '</div>'
 
