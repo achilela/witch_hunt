@@ -19,7 +19,7 @@ layout = '''
 '''
 
 for module, (row, col) in modules.items():
-    layout += f"<div style='grid-column: {col}; grid-row: {row}; background-color: black; color: white; padding: 20px; text-align: center; border: 6px solid white; border-radius: 20px;'>{module}</div>"
+    layout += f"<div style='grid-column: {col}; grid-row: {row}; background-color: black; color: white; padding: 20px; text-align: center; border: 4px solid white; border-radius: 10px;'>{module}</div>"
 
 layout += '''
     </div>
