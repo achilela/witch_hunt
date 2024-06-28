@@ -1,7 +1,7 @@
 import streamlit as st
 
 # Streamlit app layout
-st.title('CLV FPSO Layout')
+st.title('CLV FPSO Layout') # consider using markdown 
 
 # Define the layout
 modules = {
@@ -28,6 +28,7 @@ layout += '''
     </div>
 </div>
 '''
+# work to be continued on adjusting the M131 Flare centering and spacing.
 
 st.markdown(layout, unsafe_allow_html=True)
 
@@ -36,7 +37,7 @@ st.markdown("""
 <style>
     .stMarkdown div {
         display: inline-block;
-        margin: 10px;
+        margin: 20px;
     }
 </style>
 """, unsafe_allow_html=True)
