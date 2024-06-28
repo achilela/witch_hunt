@@ -37,7 +37,7 @@ st.markdown("""
 <style>
     .stMarkdown div {
         display: inline-block;
-        margin: 20px;
+        margin: 8px;
     }
 </style>
 """, unsafe_allow_html=True)
