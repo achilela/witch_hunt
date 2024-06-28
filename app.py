@@ -1,7 +1,7 @@
 import streamlit as st
 
 # Streamlit app layout
-st.title('FPSO Layout')
+st.title('CLV FPSO Layout')
 
 # Define the layout
 modules = {
