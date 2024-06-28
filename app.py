@@ -1,7 +1,7 @@
 import streamlit as st
 
 # Streamlit app layout
-st.title('CLV FPSO Layout') # consider using markdown 
+st.title('CLV FPSO Layout')
 
 # Define the layout
 modules = {
@@ -15,20 +15,19 @@ modules = {
 # Create the layout with specified colors and adjustments
 layout = '''
 <div style='display: flex; flex-direction: column; align-items: center;'>
-    <div style='border: 8px solid black; border-radius: 10px; background-color: white; padding: 25px; display: grid; grid-template-columns: repeat(7, 1fr); grid-gap: 40px;'>
+    <div style='border: 4px solid black; border-radius: 10px; background-color: white; padding: 20px; display: grid; grid-template-columns: repeat(7, 1fr); grid-gap: 20px;'>
 '''
 
 for module, (row, col) in modules.items():
-    layout += f"<div style='grid-column: {col}; grid-row: {row}; background-color: black; color: white; padding: 20px; text-align: center; border: 4px solid white; border-radius: 10px;'>{module}</div>"
+    layout += f"<div style='grid-column: {col}; grid-row: {row}; background-color: black; color: white; padding: 20px; text-align: center; border: 2px solid white; border-radius: 10px;'>{module}</div>"
 
 layout += '''
     </div>
-    <div style='display: flex; justify-content: flex-end; width: 100%; margin-top: -230px;'>
-        <div style='border: 8px solid black; border-radius: 10px; background-color: black; color: white; padding: 30px; text-align: center; width: 10%; margin-right: -90px;'>M131 Flare</div>
+    <div style='display: flex; justify-content: flex-end; width: 100%; margin-top: -60px;'>
+        <div style='border: 2px solid black; border-radius: 10px; background-color: white; padding: 20px; text-align: center; width: 10%; margin-right: 40px;'>M131 Flare</div>
     </div>
 </div>
 '''
-# work to be continued on adjusting the M131 Flare centering and spacing.
 
 st.markdown(layout, unsafe_allow_html=True)
 
@@ -37,7 +36,7 @@ st.markdown("""
 <style>
     .stMarkdown div {
         display: inline-block;
-        margin: 8px;
+        margin: 10px;
     }
 </style>
 """, unsafe_allow_html=True)
