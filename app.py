@@ -2,20 +2,20 @@ import streamlit as st
 import pandas as pd
  
 # Load the dataset
-data = pd.read_excel('/mnt/data/file-kXDunD43ReJ6svJG6mWYLb06.xlsx')
+#data = pd.read_excel('/mnt/data/file-kXDunD43ReJ6svJG6mWYLb06.xlsx')
  
 # Function to determine the color based on the dataset
-def get_module_color(module_code, anomaly_type):
-    try:
-        value = data.pivot_table(index=['Module Code', 'Anomaly Type'], values='Value').loc[(module_code, anomaly_type)]
-        if value > threshold_red:
-            return 'red'
-        elif value > threshold_amber:
-            return 'amber'
-        else:
-            return 'green'
-    except KeyError:
-        return 'green'
+#def get_module_color(module_code, anomaly_type):
+#    try:
+#        value = data.pivot_table(index=['Module Code', 'Anomaly Type'], values='Value').loc[(module_code, anomaly_type)]
+#        if value > threshold_red:
+#            return 'red'
+#        elif value > threshold_amber:
+#            return 'amber'
+#        else:
+#            return 'green'
+#    except KeyError:
+#        return 'green'
  
 # Streamlit app layout
 st.title('FPSO Layout')
