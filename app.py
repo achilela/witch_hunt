@@ -1,6 +1,7 @@
 import streamlit as st
 import matplotlib.pyplot as plt
 import matplotlib.patches as patches
+import numpy as np
 
 # Streamlit app layout
 st.title('CLV FPSO Layout')
@@ -21,17 +22,18 @@ selected_shape = st.sidebar.selectbox('Select a shape:', shape_options)
 
 # Create a sidebar for shape properties
 st.sidebar.header('Shape Properties')
+shape_properties = {}
 if selected_shape == 'Rectangle':
-    width = st.sidebar.slider('Width:', 1, 10, 5)
-    height = st.sidebar.slider('Height:', 1, 10, 5)
-    color = st.sidebar.color_picker('Color:')
+    shape_properties['width'] = st.sidebar.slider('Width:', 1, 10, 5)
+    shape_properties['height'] = st.sidebar.slider('Height:', 1, 10, 5)
+    shape_properties['color'] = st.sidebar.color_picker('Color:')
 elif selected_shape == 'Triangle':
-    base = st.sidebar.slider('Base:', 1, 10, 5)
-    height = st.sidebar.slider('Height:', 1, 10, 5)
-    color = st.sidebar.color_picker('Color:')
+    shape_properties['base'] = st.sidebar.slider('Base:', 1, 10, 5)
+    shape_properties['height'] = st.sidebar.slider('Height:', 1, 10, 5)
+    shape_properties['color'] = st.sidebar.color_picker('Color:')
 elif selected_shape == 'Circle':
-    radius = st.sidebar.slider('Radius:', 1, 10, 5)
-    color = st.sidebar.color_picker('Color:')
+    shape_properties['radius'] = st.sidebar.slider('Radius:', 1, 10, 5)
+    shape_properties['color'] = st.sidebar.color_picker('Color:')
 else:
     st.sidebar.write('Please select a shape')
 
@@ -45,11 +47,11 @@ for module, (row, col) in modules.items():
 
 # Draw the selected shape
 if selected_shape == 'Rectangle':
-    ax.add_patch(patches.Rectangle((0, 0), width, height, edgecolor='black', facecolor=color))
+    ax.add_patch(patches.Rectangle((0, 0), shape_properties['width'], shape_properties['height'], edgecolor='black', facecolor=shape_properties['color']))
 elif selected_shape == 'Triangle':
-    ax.add_patch(patches.RegularPolygon((0, 0), numVertices=3, radius=base, orientation=np.radians(60), edgecolor='black', facecolor=color))
+    ax.add_patch(patches.RegularPolygon((0, 0), numVertices=3, radius=shape_properties['base'], orientation=np.radians(60), edgecolor='black', facecolor=shape_properties['color']))
 elif selected_shape == 'Circle':
-    ax.add_patch(patches.Circle((0, 0), radius=radius, edgecolor='black', facecolor=color))
+    ax.add_patch(patches.Circle((0, 0), radius=shape_properties['radius'], edgecolor='black', facecolor=shape_properties['color']))
 
 # Set the axis limits and aspect ratio
 ax.set_xlim(0, 8)
