@@ -1,7 +1,9 @@
 import streamlit as st
+import matplotlib.pyplot as plt
+import matplotlib.patches as patches
 
 # Streamlit app layout
-st.title('CLV FPSO Layout') # consider using markdown 
+st.title('CLV FPSO Layout')
 
 # Define the layout
 modules = {
@@ -12,25 +14,50 @@ modules = {
     'M125': (2, 6), 'M126': (2, 7)
 }
 
-# Create the layout with specified colors and adjustments
-layout = '''
-<div style='display: flex; flex-direction: column; align-items: center;'>
-    <div style='border: 8px solid black; border-radius: 10px; background-color: white; padding: 25px; display: grid; grid-template-columns: repeat(7, 1fr); grid-gap: 40px;'>
-'''
+# Create a sidebar for shape selection
+st.sidebar.header('Shape Selection')
+shape_options = ['Rectangle', 'Triangle', 'Circle', 'Other']
+selected_shape = st.sidebar.selectbox('Select a shape:', shape_options)
 
+# Create a sidebar for shape properties
+st.sidebar.header('Shape Properties')
+if selected_shape == 'Rectangle':
+    width = st.sidebar.slider('Width:', 1, 10, 5)
+    height = st.sidebar.slider('Height:', 1, 10, 5)
+    color = st.sidebar.color_picker('Color:')
+elif selected_shape == 'Triangle':
+    base = st.sidebar.slider('Base:', 1, 10, 5)
+    height = st.sidebar.slider('Height:', 1, 10, 5)
+    color = st.sidebar.color_picker('Color:')
+elif selected_shape == 'Circle':
+    radius = st.sidebar.slider('Radius:', 1, 10, 5)
+    color = st.sidebar.color_picker('Color:')
+else:
+    st.sidebar.write('Please select a shape')
+
+# Create a figure and axis for the layout
+fig, ax = plt.subplots(figsize=(10, 6))
+
+# Draw the modules
 for module, (row, col) in modules.items():
-    layout += f"<div style='grid-column: {col}; grid-row: {row}; background-color: black; color: white; padding: 20px; text-align: center; border: 4px solid white; border-radius: 10px;'>{module}</div>"
+    ax.add_patch(patches.Rectangle((col, row), 1, 1, edgecolor='black', facecolor='white'))
+    ax.text(col + 0.5, row + 0.5, module, ha='center', va='center')
 
-layout += '''
-    </div>
-    <div style='display: flex; justify-content: flex-end; width: 100%; margin-top: -230px;'>
-        <div style='border: 8px solid black; border-radius: 10px; background-color: black; color: white; padding: 30px; text-align: center; width: 10%; margin-right: -90px;'>M131 Flare</div>
-    </div>
-</div>
-'''
-# work to be continued on adjusting the M131 Flare centering and spacing.
+# Draw the selected shape
+if selected_shape == 'Rectangle':
+    ax.add_patch(patches.Rectangle((0, 0), width, height, edgecolor='black', facecolor=color))
+elif selected_shape == 'Triangle':
+    ax.add_patch(patches.RegularPolygon((0, 0), numVertices=3, radius=base, orientation=np.radians(60), edgecolor='black', facecolor=color))
+elif selected_shape == 'Circle':
+    ax.add_patch(patches.Circle((0, 0), radius=radius, edgecolor='black', facecolor=color))
 
-st.markdown(layout, unsafe_allow_html=True)
+# Set the axis limits and aspect ratio
+ax.set_xlim(0, 8)
+ax.set_ylim(0, 3)
+ax.set_aspect('equal')
+
+# Display the figure
+st.pyplot(fig)
 
 # Additional styles for the layout
 st.markdown("""
