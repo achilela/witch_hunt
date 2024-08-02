@@ -12,8 +12,9 @@ def main():
 
 	if choice == 'Design':
 		st.subheader("Design")
-		bgcolor = st.beta_color_picker("Pick a Background color")
-		fontcolor = st.beta_color_picker("Pick a Font Color","#fff")
+		bgcolor = st.color_picker("Pick a Background color")
+		fontcolor = st.color_picker("Pick a Font Color","#fff")
+		
 
 		html_temp = """
 		<div style="background-color:{};padding:10px">
