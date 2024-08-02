@@ -29,6 +29,11 @@ modules = {
     'M125': (2, 6), 'M126': (2, 7)
 }
  
+racks = {
+    'P-RACK 141': (1.5, 1), 'P-RACK 142': (1.5, 2), 'P-RACK 143': (1.5, 3),
+    'P-RACK 144': (1.5, 4), 'P-RACK 145': (1.5, 5), 'P-RACK 146': (1.5, 6.5)
+}
+ 
 # Create a figure and axis for the layout
 fig, ax = plt.subplots(figsize=(12, 8))
  
@@ -37,10 +42,16 @@ ax.set_xlim(0, 8)
 ax.set_ylim(0, 3)
 ax.set_aspect('equal')
  
-# Draw the modules
+# Draw the M modules
 for module, (row, col) in modules.items():
     add_chamfered_rectangle(ax, (col, row), 1, 1, 0.1, edgecolor='black', facecolor='white')
     ax.text(col + 0.5, row + 0.5, module, ha='center', va='center', fontsize=10)
+ 
+# Draw the RACK modules
+for rack, (row, col) in racks.items():
+    width = 0.85 if rack == 'P-RACK 146' else 0.15
+    add_chamfered_rectangle(ax, (col, row), width, 1, 0.05, edgecolor='black', facecolor='white')
+    ax.text(col + width / 2, row + 0.5, rack, ha='center', va='center', fontsize=8)
  
 # Display the figure
 st.pyplot(fig)
