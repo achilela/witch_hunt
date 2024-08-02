@@ -1,7 +1,9 @@
 import streamlit as st
+import matplotlib.pyplot as plt
+import matplotlib.patches as patches
 
 # Streamlit app layout
-st.title('CLV FPSO Layout') # consider using markdown 
+st.title('CLV FPSO Layout')
 
 # Define the layout
 modules = {
@@ -12,32 +14,30 @@ modules = {
     'M125': (2, 6), 'M126': (2, 7)
 }
 
-# Create the layout with specified colors and adjustments
-layout = '''
-<div style='display: flex; flex-direction: column; align-items: center;'>
-    <div style='border: 8px solid black; border-radius: 10px; background-color: white; padding: 25px; display: grid; grid-template-columns: repeat(7, 1fr); grid-gap: 40px;'>
-'''
+# Create a figure and axis
+fig, ax = plt.subplots()
 
+# Draw the ship hull
+ship_hull = patches.Rectangle((0, 0), 10, 5, linewidth=1, edgecolor='black', facecolor='none')
+ax.add_patch(ship_hull)
+
+# Draw the modules
 for module, (row, col) in modules.items():
-    layout += f"<div style='grid-column: {col}; grid-row: {row}; background-color: black; color: white; padding: 20px; text-align: center; border: 4px solid white; border-radius: 10px;'>{module}</div>"
+    module_rect = patches.Rectangle((col * 1.5, row * 2.5), 1, 1, linewidth=1, edgecolor='black', facecolor='black')
+    ax.add_patch(module_rect)
+    ax.text(col * 1.5 + 0.5, row * 2.5 + 0.5, module, ha='center', va='center', color='white')
 
-layout += '''
-    </div>
-    <div style='display: flex; justify-content: flex-end; width: 100%; margin-top: -230px;'>
-        <div style='border: 8px solid black; border-radius: 10px; background-color: black; color: white; padding: 30px; text-align: center; width: 10%; margin-right: -90px;'>M131 Flare</div>
-    </div>
-</div>
-'''
-# work to be continued on adjusting the M131 Flare centering and spacing.
+# Draw the flare
+flare = patches.Rectangle((7.5, 2.5), 2, 1, linewidth=1, edgecolor='black', facecolor='black')
+ax.add_patch(flare)
+ax.text(8.5, 2.5, 'M131 Flare', ha='center', va='center', color='white')
 
-st.markdown(layout, unsafe_allow_html=True)
+# Set the axis limits
+ax.set_xlim(0, 10)
+ax.set_ylim(0, 5)
 
-# Additional styles for the layout
-st.markdown("""
-<style>
-    .stMarkdown div {
-        display: inline-block;
-        margin: 8px;
-    }
-</style>
-""", unsafe_allow_html=True)
+# Show the plot
+st.pyplot(fig)
+
+if __name__ == '__main__':
+    st.run()
