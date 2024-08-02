@@ -1,5 +1,8 @@
 import streamlit as st
 
+
+
+
 def main():
 	"""A Simple Streamlit App For CSS Shape Generation """
 	st.title("Simple CSS Shape Generator")
@@ -35,7 +38,10 @@ def main():
 		border_color = st.sidebar.beta_color_picker("Pick a Border Color","#654FEF")
 	
 
-	
+		html_design = """
+		<div style="height:{}px;width:{}px;background-color:{};border-radius:{}px {}px {}px {}px;border-style:{};border-color:{}">
+		</div>
+		"""
 		st.markdown(html_design.format(height,width,bgcolor2,top_left_border,top_right_border,bottom_left_border,bottom_right_border,border_style,border_color),unsafe_allow_html=True)
 
 		if st.checkbox("View Results"):
@@ -48,3 +54,8 @@ def main():
 		st.info("Jesus Saves @JCharisTech")
 		st.text("By Jesse E.Agbe(JCharis)")
 		st.success("Built with Streamlit")
+
+
+
+if __name__ == '__main__':
+	main()
