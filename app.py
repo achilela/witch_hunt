@@ -1,62 +1,43 @@
 import streamlit as st
 
+# Streamlit app layout
+st.title('CLV FPSO Layout') # consider using markdown 
 
+# Define the layout
+modules = {
+    'M110': (1, 1), 'M111': (1, 2), 'M112': (1, 3),
+    'M113': (1, 4), 'M114': (1, 5), 'M115': (1, 6),
+    'M116': (1, 7), 'M120': (2, 1), 'M121': (2, 2),
+    'M122': (2, 3), 'M123': (2, 4), 'M124': (2, 5),
+    'M125': (2, 6), 'M126': (2, 7)
+}
 
+# Create the layout with specified colors and adjustments
+layout = '''
+<div style='display: flex; flex-direction: column; align-items: center;'>
+    <div style='border: 8px solid black; border-radius: 10px; background-color: white; padding: 25px; display: grid; grid-template-columns: repeat(7, 1fr); grid-gap: 40px;'>
+'''
 
-def main():
-	"""A Simple Streamlit App For CSS Shape Generation """
-	st.title("Simple CSS Shape Generator")
+for module, (row, col) in modules.items():
+    layout += f"<div style='grid-column: {col}; grid-row: {row}; background-color: black; color: white; padding: 20px; text-align: center; border: 4px solid white; border-radius: 10px;'>{module}</div>"
 
-	activity = ['Design','About',]
-	choice = st.sidebar.selectbox("Select Activity",activity)
+layout += '''
+    </div>
+    <div style='display: flex; justify-content: flex-end; width: 100%; margin-top: -230px;'>
+        <div style='border: 8px solid black; border-radius: 10px; background-color: black; color: white; padding: 30px; text-align: center; width: 10%; margin-right: -90px;'>M131 Flare</div>
+    </div>
+</div>
+'''
+# work to be continued on adjusting the M131 Flare centering and spacing.
 
-	if choice == 'Design':
-		st.subheader("Design")
-		bgcolor = st.color_picker("Pick a Background color")
-		fontcolor = st.color_picker("Pick a Font Color","#fff")
-		
+st.markdown(layout, unsafe_allow_html=True)
 
-		html_temp = """
-		<div style="background-color:{};padding:10px">
-		<h1 style="color:{};text-align:center;">Streamlit Simple CSS Shape Generator </h1>
-		</div>
-		"""
-		st.markdown(html_temp.format(bgcolor,fontcolor),unsafe_allow_html=True)
-		st.markdown("<div><p style='color:{}'>Hello Streamlit</p></div>".format(bgcolor),unsafe_allow_html=True)
-
-
-		st.subheader("Modify Shape")
-		bgcolor2 = st.sidebar.beta_color_picker("Pick a Bckground color")
-		height = st.sidebar.slider('Height Size',50,200,50)
-		width = st.sidebar.slider("Width Size",50,200,50)
-		# border = st.slider("Border Radius",10,60,10)
-		top_left_border = st.sidebar.number_input('Top Left Border',10,50,10)
-		top_right_border = st.sidebar.number_input('Top Right Border',10,50,10)
-		bottom_left_border = st.sidebar.number_input('Bottom Left Border',10,50,10)
-		bottom_right_border = st.sidebar.number_input('Bottom Right Border',10,50,10)
-
-		border_style = st.sidebar.selectbox("Border Style",["dotted","dashed","solid","double","groove","ridge","inset","outset","none","hidden"])
-		border_color = st.sidebar.beta_color_picker("Pick a Border Color","#654FEF")
-	
-
-		html_design = """
-		<div style="height:{}px;width:{}px;background-color:{};border-radius:{}px {}px {}px {}px;border-style:{};border-color:{}">
-		</div>
-		"""
-		st.markdown(html_design.format(height,width,bgcolor2,top_left_border,top_right_border,bottom_left_border,bottom_right_border,border_style,border_color),unsafe_allow_html=True)
-
-		if st.checkbox("View Results"):
-			st.subheader("Result")
-			result_of_design = html_design.format(height,width,bgcolor2,top_left_border,top_right_border,bottom_left_border,bottom_right_border,border_style,border_color)			
-			st.code(result_of_design)
-
-	if choice =="About":
-		st.subheader("About")
-		st.info("Jesus Saves @JCharisTech")
-		st.text("By Jesse E.Agbe(JCharis)")
-		st.success("Built with Streamlit")
-
-
-
-if __name__ == '__main__':
-	main()
+# Additional styles for the layout
+st.markdown("""
+<style>
+    .stMarkdown div {
+        display: inline-block;
+        margin: 8px;
+    }
+</style>
+""", unsafe_allow_html=True)
