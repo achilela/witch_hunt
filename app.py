@@ -31,7 +31,7 @@ modules = {
  
 racks = {
     'P-RACK 141': (1.5, 1), 'P-RACK 142': (1.5, 2), 'P-RACK 143': (1.5, 3),
-    'P-RACK 144': (1.5, 4), 'P-RACK 145': (1.5, 5), 'P-RACK 146': (1.5, 6.5)
+    'P-RACK 144': (1.5, 4), 'P-RACK 145': (1.5, 5), 'P-RACK 146': (1.5, 6)
 }
  
 # Create a figure and axis for the layout
