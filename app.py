@@ -49,7 +49,7 @@ for module, (row, col) in modules.items():
  
 # Draw the RACK modules
 for rack, (row, col) in racks.items():
-    width = 0.85 if rack == 'P-RACK 146' else 0.15
+    width = 0.25 if rack == 'P-RACK 146' else 0.15
     add_chamfered_rectangle(ax, (col, row), width, 1, 0.05, edgecolor='black', facecolor='white')
     ax.text(col + width / 2, row + 0.5, rack, ha='center', va='center', fontsize=8)
  
