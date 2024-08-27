@@ -59,7 +59,7 @@ for rack, (row, col) in racks.items():
 
 for flare, (row, col) in flare.items():
     add_chamfered_rectangle(ax, (col, row), 2, 1, 0.1, edgecolor='black', facecolor='white')
-    ax.text(col + 0.5, row + 0.5, module, ha='center', va='center', fontsize=10)
+    ax.text(col + 0.5, row + 0.5, flare, ha='center', va='center', fontsize=10)
  
 # Display the figure
 st.pyplot(fig)
