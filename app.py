@@ -33,6 +33,10 @@ racks = {
     'P-RACK 141': (1.5, 1), 'P-RACK 142': (1.5, 2), 'P-RACK 143': (1.5, 3),
     'P-RACK 144': (1.5, 4), 'P-RACK 145': (1.5, 5), 'P-RACK 146': (1.5, 6)
 }
+
+flare = {
+     'FLARE': (0.5, 8) 
+}
  
 # Create a figure and axis for the layout
 fig, ax = plt.subplots(figsize=(12, 8))
@@ -52,6 +56,10 @@ for rack, (row, col) in racks.items():
     width = 2 if rack == 'P-RACK 146' else 1
     add_chamfered_rectangle(ax, (col, row), width, 0.5, 0.05, edgecolor='black', facecolor='white')
     ax.text(col + width / 2, row + 0.25, rack, ha='center', va='center', fontsize=8)
+
+for flare, (row, col) in flare.items():
+    add_chamfered_rectangle(ax, (col, row), 2, 1, 0.1, edgecolor='black', facecolor='white')
+    ax.text(col + 0.5, row + 0.5, module, ha='center', va='center', fontsize=10)
  
 # Display the figure
 st.pyplot(fig)
