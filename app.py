@@ -39,7 +39,7 @@ fig, ax = plt.subplots(figsize=(12, 8))
  
 # Set the axis limits and aspect ratio
 ax.set_xlim(0, 8)
-ax.set_ylim(0, 2.5)
+ax.set_ylim(0, 3.5)
 ax.set_aspect('equal')
  
 # Draw the M modules
