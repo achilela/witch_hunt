@@ -59,7 +59,7 @@ for rack, (row, col) in racks.items():
 
 # Draw the flare with chamfer only at the top
 for flare, (row, col) in flare.items():
-    add_chamfered_rectangle(ax, (col, row), 1, 2.5, 0.25, chamfer_end='top', edgecolor='black', facecolor='white')
+    add_chamfered_rectangle(ax, (col, row), 1, 2.5, 0.1, edgecolor='black', facecolor='white')
     ax.text(col + 0.5, row + 1.25, flare, ha='center', va='center', fontsize=10)
  
 # Display the figure
