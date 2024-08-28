@@ -3,19 +3,47 @@ import matplotlib.pyplot as plt
 import matplotlib.patches as patches
  
 # Function to draw chamfered rectangles
-def add_chamfered_rectangle(ax, xy, width, height, chamfer, **kwargs):
+#def add_chamfered_rectangle(ax, xy, width, height, chamfer, **kwargs):
+#    x, y = xy
+#    coords = [
+#        (x + chamfer, y),
+#        (x + width - chamfer, y),
+#        (x + width, y + chamfer),
+#        (x + width, y + height - chamfer),
+#        (x + width - chamfer, y + height),
+#        (x + chamfer, y + height),
+#        (x, y + height - chamfer),
+#        (x, y + chamfer)
+#    ]
+#    polygon = patches.Polygon(coords, closed=True, **kwargs)
+#    ax.add_patch(polygon)
+
+import matplotlib.patches as patches
+
+def add_chamfered_rectangle(ax, xy, width, height, chamfer, chamfer_end='top', **kwargs):
     x, y = xy
-    coords = [
-        (x + chamfer, y),
-        (x + width - chamfer, y),
-        (x + width, y + chamfer),
-        (x + width, y + height - chamfer),
-        (x + width - chamfer, y + height),
-        (x + chamfer, y + height),
-        (x, y + height - chamfer),
-        (x, y + chamfer)
-    ]
-    polygon = patches.Polygon(coords, closed=True, **kwargs)
+    if chamfer_end == 'top':
+        coords = [
+            (x, y),
+            (x + width, y),
+            (x + width, y + chamfer),
+            (x + width, y + height),
+            (x, y + height),
+            (x, y + chamfer)
+        ]
+    elif chamfer_end == 'bottom':
+        coords = [
+            (x, y),
+            (x + width, y),
+            (x + width, y + height - chamfer),
+            (x + width, y + height),
+            (x, y + height),
+            (x, y + height - chamfer)
+        ]
+    else:
+        raise ValueError("chamfer_end must be either 'top' or 'bottom'")
+    
+    polygon = patches.Polygon(coords, closed=True **kwargs)
     ax.add_patch(polygon)
  
 # Streamlit app layout
@@ -64,7 +92,7 @@ for rack, (row, col) in racks.items():
 
 # Draw the flare with chamfer only at the top
 for flare, (row, col) in flare.items():
-    add_chamfered_rectangle(ax, (col, row), 1, 2.5, 0.1, edgecolor='black', facecolor='white') #chamfer_end='top',
+    add_chamfered_rectangle(ax, (col, row), 1, 2.5, 0.1, chamfer_end='top', edgecolor='black', facecolor='white') #chamfer_end='top',
     ax.text(col + 0.5, row + 1.25, flare, ha='center', va='center', fontsize=10)
  
 # Display the figure
