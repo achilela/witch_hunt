@@ -19,7 +19,7 @@ def add_chamfered_rectangle(ax, xy, width, height, chamfer, **kwargs):
     ax.add_patch(polygon)
  
 # Streamlit app layout
-st.title('CLV FPSO Layout')
+st.title('CLV')
  
 # Define the layout modules and positions
 modules = {
