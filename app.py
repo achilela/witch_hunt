@@ -61,7 +61,7 @@ living_quarters = {
 
 # Example hexagon to add
 hexagons = {
-    'HEX1': (4, 1.5)
+    'HELIDECK': (3, 1.5)
 }
 
 # Create a figure and axis for the layout
