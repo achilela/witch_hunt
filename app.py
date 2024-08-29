@@ -75,28 +75,28 @@ ax.set_aspect('equal')
 # Draw the M modules
 for module, (row, col) in modules.items():
     add_chamfered_rectangle(ax, (col, row), 1, 1, 0.1, edgecolor='black', facecolor='white')
-    ax.text(col + 0.5, row + 0.5, module, ha='center', va='center', fontsize=8)
+    ax.text(col + 0.5, row + 0.5, module, ha='center', va='center', fontsize=7)
 
 # Draw the RACK modules
 for rack, (row, col) in racks.items():
     width = 2 if rack == 'P-RACK 146' else 1
     add_chamfered_rectangle(ax, (col, row), width, 0.5, 0.05, edgecolor='black', facecolor='white')
-    ax.text(col + width / 2, row + 0.25, rack, ha='center', va='center', fontsize=8)
+    ax.text(col + width / 2, row + 0.25, rack, ha='center', va='center', fontsize=7)
 
 # Draw the flare with chamfer only at the top
 for flare, (row, col) in flare.items():
     add_chamfered_rectangle(ax, (col, row), 1, 2.5, 0.1, edgecolor='black', facecolor='white')
-    ax.text(col + 0.5, row + 1.25, flare, ha='center', va='center', fontsize=8)
+    ax.text(col + 0.5, row + 1.25, flare, ha='center', va='center', fontsize=7)
 
 # Draw the LQ module
 for living_quarter, (row, col) in living_quarters.items():
     add_rectangle(ax, (col, row), 1, 2.5, edgecolor='black', facecolor='white')
-    ax.text(col + 0.5, row + 1.25, living_quarter, ha='center', va='center', fontsize=8, rotation=90)
+    ax.text(col + 0.5, row + 1.25, living_quarter, ha='center', va='center', fontsize=7, rotation=90)
 
 # Draw the hexagons
 for hexagon, (row, col) in hexagons.items():
     add_hexagon(ax, (col, row), 0.65, edgecolor='black', facecolor='white')
-    ax.text(col, row, hexagon, ha='center', va='center', fontsize=8)
+    ax.text(col, row, hexagon, ha='center', va='center', fontsize=7)
 
 # Display the figure
 st.pyplot(fig)
