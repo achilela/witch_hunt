@@ -8,25 +8,21 @@ def add_rectangle(ax, xy, width, height, **kwargs):
     rectangle = patches.Rectangle(xy, width, height, **kwargs)
     ax.add_patch(rectangle)
 
-# Function to draw rectangles with optional chamfers
+# Function to draw chamfered rectangles
 def add_chamfered_rectangle(ax, xy, width, height, chamfer, **kwargs):
     x, y = xy
-    if chamfer > 0:
-        coords = [
-            (x + chamfer, y),
-            (x + width - chamfer, y),
-            (x + width, y + chamfer),
-            (x + width, y + height - chamfer),
-            (x + width - chamfer, y + height),
-            (x + chamfer, y + height),
-            (x, y + height - chamfer),
-            (x, y + chamfer)
-        ]
-        polygon = patches.Polygon(coords, closed=True, **kwargs)
-        ax.add_patch(polygon)
-    else:
-        rectangle = patches.Rectangle(xy, width, height, **kwargs)
-        ax.add_patch(rectangle)
+    coords = [
+        (x + chamfer, y),
+        (x + width - chamfer, y),
+        (x + width, y + chamfer),
+        (x + width, y + height - chamfer),
+        (x + width - chamfer, y + height),
+        (x + chamfer, y + height),
+        (x, y + height - chamfer),
+        (x, y + chamfer)
+    ]
+    polygon = patches.Polygon(coords, closed=True, **kwargs)
+    ax.add_patch(polygon)
 
 # Function to draw hexagons
 def add_hexagon(ax, xy, radius, **kwargs):
@@ -56,7 +52,7 @@ racks = {
 }
 
 flare = {
-    'FLARE': [(0.5, 9), (0.5, 10)]  # Changed to list of coordinates for each segment
+    'FLARE': (0.5, 9) 
 }
 
 living_quarters = {
@@ -79,30 +75,28 @@ ax.set_aspect('equal')
 # Draw the M modules
 for module, (row, col) in modules.items():
     add_chamfered_rectangle(ax, (col, row), 1, 1, 0.1, edgecolor='black', facecolor='white')
-    ax.text(col + 0.5, row + 0.5, module, ha='center', va='center', fontsize=10)
+    ax.text(col + 0.5, row + 0.5, module, ha='center', va='center', fontsize=7)
 
 # Draw the RACK modules
 for rack, (row, col) in racks.items():
     width = 2 if rack == 'P-RACK 146' else 1
     add_chamfered_rectangle(ax, (col, row), width, 0.5, 0.05, edgecolor='black', facecolor='white')
-    ax.text(col + width / 2, row + 0.25, rack, ha='center', va='center', fontsize=8)
+    ax.text(col + width / 2, row + 0.25, rack, ha='center', va='center', fontsize=7)
 
-# Draw the FLARE module with straight rectangle at 9 and chamfered at 10
-for flare, coords in flare.items():
-    for i, (row, col) in enumerate(coords):
-        chamfer = 0.1 if row == 10 else 0  # Chamfer only at row 10
-        add_chamfered_rectangle(ax, (col, row), 1, 1, chamfer, edgecolor='black', facecolor='white')
-        ax.text(col + 0.5, row + 0.5, f"{flare} {i+1}", ha='center', va='center', fontsize=10)
+# Draw the flare with chamfer only at the top
+for flare, (row, col) in flare.items():
+    add_chamfered_rectangle(ax, (col, row), 1, 2.5, 0.1, edgecolor='black', facecolor='white')
+    ax.text(col + 0.5, row + 1.25, flare, ha='center', va='center', fontsize=7)
 
 # Draw the LQ module
 for living_quarter, (row, col) in living_quarters.items():
     add_rectangle(ax, (col, row), 1, 2.5, edgecolor='black', facecolor='white')
-    ax.text(col + 0.5, row + 1.25, living_quarter, ha='center', va='center', fontsize=10, rotation=90)
+    ax.text(col + 0.5, row + 1.25, living_quarter, ha='center', va='center', fontsize=7, rotation=90)
 
-# Draw the HELIDECK hexagon
+# Draw the hexagons
 for hexagon, (row, col) in hexagons.items():
-    add_hexagon(ax, (col, row), 0.5, edgecolor='black', facecolor='white')
-    ax.text(col, row, hexagon, ha='center', va='center', fontsize=10)
+    add_hexagon(ax, (col, row), 0.60, edgecolor='black', facecolor='white')
+    ax.text(col, row, hexagon, ha='center', va='center', fontsize=7)
 
 # Display the figure
 st.pyplot(fig)
