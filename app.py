@@ -90,7 +90,7 @@ for rack, (row, col) in racks.items():
 # Draw the FLARE module with straight rectangle at 9 and chamfered at 10
 for flare, coords in flare.items():
     for i, (row, col) in enumerate(coords):
-        chamfer = 0.1 if row == 10 else 0  # Chamfer only at row 10
+        chamfer = 0.3 if row == 10 else 0  # Chamfer only at row 10
         add_chamfered_rectangle(ax, (col, row), 1, 1, chamfer, edgecolor='black', facecolor='white')
         ax.text(col + 0.5, row + 0.5, f"{flare} {i+1}", ha='center', va='center', fontsize=10)
 
