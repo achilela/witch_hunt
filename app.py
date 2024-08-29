@@ -95,7 +95,7 @@ for living_quarter, (row, col) in living_quarters.items():
 
 # Draw the hexagons
 for hexagon, (row, col) in hexagons.items():
-    add_hexagon(ax, (col, row), 1, edgecolor='black', facecolor='white')
+    add_hexagon(ax, (col, row), 0.75, edgecolor='black', facecolor='white')
     ax.text(col, row, hexagon, ha='center', va='center', fontsize=8)
 
 # Display the figure
