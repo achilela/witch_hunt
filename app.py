@@ -2,7 +2,6 @@ import streamlit as st
 import matplotlib.pyplot as plt
 import matplotlib.patches as patches
 import math
-import matplotlib.transforms as transforms
 
 # Function to draw straight rectangles without chamfer
 def add_rectangle(ax, xy, width, height, **kwargs):
@@ -34,32 +33,27 @@ def add_hexagon(ax, xy, radius, **kwargs):
     hexagon = patches.Polygon(vertices, closed=True, **kwargs)
     ax.add_patch(hexagon)
 
-# Updated function to draw FWD module as a rotated trapezoid
+# Updated function to draw FWD module as a trapezoid
 def add_fwd(ax, xy, width, height, **kwargs):
     x, y = xy
 
     # Define the trapezoid shape
-    top_width = width * 0.6  # Narrower at the top
+    bottom_width = 2.5  # Span from 0.5 to 3 row-wise
+    top_width = bottom_width * 0.6  # Narrower at the top
+    
     coords = [
-        (0, 0),  # Bottom left
-        (width, 0),  # Bottom right
-        (width - (width - top_width) / 2, height),  # Top right
-        ((width - top_width) / 2, height)  # Top left
+        (x, y),  # Bottom left
+        (x + bottom_width, y),  # Bottom right
+        (x + top_width, y + height),  # Top right
+        (x, y + height)  # Top left
     ]
 
-    # Create the trapezoid
+    # Create and add the trapezoid
     trapezoid = patches.Polygon(coords, closed=True, **kwargs)
-
-    # Create a rotation transform
-    t = transforms.Affine2D().rotate_deg(360).translate(x, y)
-    trapezoid.set_transform(t + ax.transData)
-
-    # Add the rotated trapezoid
     ax.add_patch(trapezoid)
 
-    # Add rotated text
-    text_t = transforms.Affine2D().rotate_deg(90).translate(x + height/2, y + width/2)
-    ax.text(0, 0, "FWD", ha='center', va='center', fontsize=7, transform=text_t + ax.transData)
+    # Add text
+    ax.text(x + bottom_width/2, y + height/2, "FWD", ha='center', va='center', fontsize=7)
 
 # Streamlit app layout
 st.title('CLV')
@@ -124,7 +118,7 @@ for hexagon, (row, col) in hexagons.items():
 
 # Draw the FWD module
 for fwd_module, (row, col) in fwd.items():
-    add_fwd(ax, (col, row), 2.5, 1, edgecolor='black', facecolor='white')
+    add_fwd(ax, (row, col), 2.5, 1, edgecolor='black', facecolor='white')
 
 # Display the figure
 st.pyplot(fig)
