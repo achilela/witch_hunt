@@ -109,7 +109,7 @@ for rack, (row, col) in racks.items():
 
 # Draw the flare with chamfer only at the top
 for flare, (row, col) in flare.items():
-    add_chamfered_rectangle(ax, (col, row), 1, 2.5, 0.1, edgecolor='black', facecolor='white')
+    add_chamfered_rectangle(ax, (col, row), 0.5, 2.5, 0.1, edgecolor='black', facecolor='white')
     ax.text(col + 0.5, row + 1.25, flare, ha='center', va='center', fontsize=7)
 
 # Draw the LQ module
@@ -124,7 +124,7 @@ for hexagon, (row, col) in hexagons.items():
 
 # Draw the FWD module
 for fwd_module, (row, col) in fwd.items():
-    add_fwd(ax, (col, row), 2.5, -1.5, edgecolor='black', facecolor='white')
+    add_fwd(ax, (col, row), 2.5, -1, edgecolor='black', facecolor='white')
 
 # Display the figure
 st.pyplot(fig)
