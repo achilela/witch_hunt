@@ -124,7 +124,7 @@ for hexagon, (row, col) in hexagons.items():
 
 # Draw the FWD module
 for fwd_module, (row, col) in fwd.items():
-    add_fwd(ax, (col, row), 2.5, 2.5, edgecolor='black', facecolor='white')
+    add_fwd(ax, (col, row), 2.5, -1.5, edgecolor='black', facecolor='white')
 
 # Display the figure
 st.pyplot(fig)
