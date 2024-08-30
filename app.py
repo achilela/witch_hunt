@@ -33,18 +33,22 @@ def add_hexagon(ax, xy, radius, **kwargs):
     hexagon = patches.Polygon(vertices, closed=True, **kwargs)
     ax.add_patch(hexagon)
 
-# New function to draw FWD module
+# Updated function to draw FWD module as a trapezoid
 def add_fwd(ax, xy, width, height, **kwargs):
     x, y = xy
     
-    # Main body
-    add_rectangle(ax, (x, y), width, height * 0.8, **kwargs)
+    # Define the trapezoid shape
+    top_width = width * 0.6  # Narrower at the top
+    coords = [
+        (x, y),  # Bottom left
+        (x + width, y),  # Bottom right
+        (x + width - (width - top_width) / 2, y + height),  # Top right
+        (x + (width - top_width) / 2, y + height)  # Top left
+    ]
     
-    # Top part (narrower)
-    top_width = width * 0.6
-    top_height = height * 0.2
-    top_x = x + (width - top_width) / 2
-    add_rectangle(ax, (top_x, y + height * 0.8), top_width, top_height, **kwargs)
+    # Create and add the trapezoid
+    trapezoid = patches.Polygon(coords, closed=True, **kwargs)
+    ax.add_patch(trapezoid)
     
     # Add text
     ax.text(x + width/2, y + height/2, "FWD", ha='center', va='center', fontsize=7)
@@ -73,7 +77,7 @@ hexagons = {
     'HELIDECK': (2.75, 1)
 }
 fwd = {
-    'FWD': (0.5, 10)
+    'FWD': (0.5, 0)
 }
 
 # Create a figure and axis for the layout
