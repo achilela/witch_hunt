@@ -51,7 +51,7 @@ def add_fwd(ax, xy, width, height, **kwargs):
     trapezoid = patches.Polygon(coords, closed=True, **kwargs)
 
     # Create a rotation transform
-    t = transforms.Affine2D().rotate_deg(360).translate(y, x)
+    t = transforms.Affine2D().rotate_deg(360).translate(x, y)
     trapezoid.set_transform(t + ax.transData)
 
     # Add the rotated trapezoid
