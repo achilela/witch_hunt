@@ -51,7 +51,7 @@ def add_fwd(ax, xy, width, height, **kwargs):
     trapezoid = patches.Polygon(coords, closed=True, **kwargs)
 
     # Create a rotation transform
-    t = transforms.Affine2D().rotate_deg(90).translate(x, y)
+    t = transforms.Affine2D().rotate_deg(180).translate(x, y)
     trapezoid.set_transform(t + ax.transData)
 
     # Add the rotated trapezoid
@@ -124,7 +124,7 @@ for hexagon, (row, col) in hexagons.items():
 
 # Draw the FWD module
 for fwd_module, (row, col) in fwd.items():
-    add_fwd(ax, (col, row), 1, 2.5, edgecolor='black', facecolor='white')
+    add_fwd(ax, (col, row), 2.5, 1, edgecolor='black', facecolor='white')
 
 # Display the figure
 st.pyplot(fig)
