@@ -59,7 +59,7 @@ def add_fwd(ax, xy, width, height, **kwargs):
 
     # Add rotated text
     text_t = transforms.Affine2D().rotate_deg(90).translate(x + height/2, y + width/2)
-    ax.text(0, -1.5, "FWD", ha='center', va='center', fontsize=7, transform=text_t + ax.transData)
+    ax.text(0, -1, "FWD", ha='center', va='center', fontsize=7, transform=text_t + ax.transData)
 
 # Streamlit app layout
 st.title('CLV')
