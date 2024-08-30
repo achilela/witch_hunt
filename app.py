@@ -2,6 +2,7 @@ import streamlit as st
 import matplotlib.pyplot as plt
 import matplotlib.patches as patches
 import math
+import matplotlib.transforms as transforms
 
 # Function to draw straight rectangles without chamfer
 def add_rectangle(ax, xy, width, height, **kwargs):
@@ -33,25 +34,32 @@ def add_hexagon(ax, xy, radius, **kwargs):
     hexagon = patches.Polygon(vertices, closed=True, **kwargs)
     ax.add_patch(hexagon)
 
-# Updated function to draw FWD module as a trapezoid
+# Updated function to draw FWD module as a rotated trapezoid
 def add_fwd(ax, xy, width, height, **kwargs):
     x, y = xy
-    
+
     # Define the trapezoid shape
     top_width = width * 0.6  # Narrower at the top
     coords = [
-        (x, y),  # Bottom left
-        (x + width, y),  # Bottom right
-        (x + width - (width - top_width) / 2, y + height),  # Top right
-        (x + (width - top_width) / 2, y + height)  # Top left
+        (0, 0),  # Bottom left
+        (width, 0),  # Bottom right
+        (width - (width - top_width) / 2, height),  # Top right
+        ((width - top_width) / 2, height)  # Top left
     ]
-    
-    # Create and add the trapezoid
+
+    # Create the trapezoid
     trapezoid = patches.Polygon(coords, closed=True, **kwargs)
+
+    # Create a rotation transform
+    t = transforms.Affine2D().rotate_deg(90).translate(x, y)
+    trapezoid.set_transform(t + ax.transData)
+
+    # Add the rotated trapezoid
     ax.add_patch(trapezoid)
-    
-    # Add text
-    ax.text(x + width/2, y + height/2, "FWD", ha='center', va='center', fontsize=7)
+
+    # Add rotated text
+    text_t = transforms.Affine2D().rotate_deg(90).translate(x + height/2, y + width/2)
+    ax.text(0, 0, "FWD", ha='center', va='center', fontsize=7, transform=text_t + ax.transData)
 
 # Streamlit app layout
 st.title('CLV')
@@ -101,32 +109,4 @@ for rack, (row, col) in racks.items():
 
 # Draw the flare with chamfer only at the top
 for flare, (row, col) in flare.items():
-    add_chamfered_rectangle(ax, (col, row), 1, 2.5, 0.1, edgecolor='black', facecolor='white')
-    ax.text(col + 0.5, row + 1.25, flare, ha='center', va='center', fontsize=7)
-
-# Draw the LQ module
-for living_quarter, (row, col) in living_quarters.items():
-    add_rectangle(ax, (col, row), 1, 2.5, edgecolor='black', facecolor='white')
-    ax.text(col + 0.5, row + 1.25, living_quarter, ha='center', va='center', fontsize=7, rotation=90)
-
-# Draw the hexagons
-for hexagon, (row, col) in hexagons.items():
-    add_hexagon(ax, (col, row), 0.60, edgecolor='black', facecolor='white')
-    ax.text(col, row, hexagon, ha='center', va='center', fontsize=7)
-
-# Draw the FWD module
-for fwd_module, (row, col) in fwd.items():
-    add_fwd(ax, (col, row), 1, 2.5, edgecolor='black', facecolor='white')
-
-# Display the figure
-st.pyplot(fig)
-
-# Additional styles for the layout
-st.markdown("""
-<style>
-    .stMarkdown div {
-        display: inline-block;
-        margin: 8px;
-    }
-</style>
-""", unsafe_allow_html=True)
+    add_chamfered_rectangle(ax, (col, row), 1, 2.5, 0.1, edgecolor='blac
