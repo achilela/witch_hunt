@@ -73,7 +73,7 @@ hexagons = {
     'HELIDECK': (2.75, 1)
 }
 fwd = {
-    'FWD': (0.5, 0)
+    'FWD': (0.5, 10)
 }
 
 # Create a figure and axis for the layout
