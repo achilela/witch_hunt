@@ -67,7 +67,7 @@ st.title('CLV')
 # Define the layout modules and positions
 modules = {
     'M120': (0.5, 2), 'M121': (0.5, 3), 'M122': (0.5, 4), 'M123': (0.5, 5),
-    'M124': (0.5, 6), 'M125': (0.5, 7), 'M126': (0.5, 8), 'M110': (2, 2),
+    'M124': (0.5, 6), 'M125': (0.5, 7), 'M126': (0.5, 8), 'M110': (1.75, 2),
     'M111': (2, 3), 'M112': (2, 4), 'M113': (2, 5), 'M114': (2, 6),
     'M115': (2, 7), 'M116': (2, 8)
 }
@@ -98,7 +98,6 @@ ax.set_aspect('equal')
 
 # Draw the M modules
 for module, (row, col) in modules.items():
-    width = 1.75 if module == 'M110' else 1
     add_chamfered_rectangle(ax, (col, row), 1, 1, 0.1, edgecolor='black', facecolor='white')
     ax.text(col + 0.5, row + 0.5, module, ha='center', va='center', fontsize=7)
 
