@@ -39,7 +39,7 @@ def add_fwd(ax, xy, width, height, **kwargs):
     x, y = xy
 
     # Define the trapezoid shape
-    top_width = width * 0.85  # Narrower at the top
+    top_width = width * 0.80  # Narrower at the top
     coords = [
         (0, 0),  # Bottom left
         (width, 0),  # Bottom right
