@@ -76,7 +76,7 @@ racks = {
     'P-RACK 144': (1.5, 5), 'P-RACK 145': (1.5, 6), 'P-RACK 146': (1.5, 7)
 }
 flare = {
-    'FLARE': (0.5, 9) 
+    'FL': (0.5, 9) 
 }
 living_quarters = {
     'LQ': (0.5, 1)
@@ -85,7 +85,7 @@ hexagons = {
     'HELIDECK': (2.75, 1)
 }
 fwd = {
-    'FWD': (0.5, 10)
+    'FWD': (0.5, 9.5)
 }
 
 # Create a figure and axis for the layout
@@ -110,7 +110,7 @@ for rack, (row, col) in racks.items():
 # Draw the flare with chamfer only at the top
 for flare, (row, col) in flare.items():
     add_chamfered_rectangle(ax, (col, row), 0.5, 2.5, 0.1, edgecolor='black', facecolor='white')
-    ax.text(col + 0.5, row + 1.25, flare, ha='center', va='center', fontsize=7)
+    ax.text(col + 0.1, row + 1.25, flare, ha='center', va='center', fontsize=7)
 
 # Draw the LQ module
 for living_quarter, (row, col) in living_quarters.items():
