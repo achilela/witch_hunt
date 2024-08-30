@@ -98,6 +98,7 @@ ax.set_aspect('equal')
 
 # Draw the M modules
 for module, (row, col) in modules.items():
+    height = 1.25 if module in ['M110', 'M120'] else 1
     add_chamfered_rectangle(ax, (col, row), 1, 1, 0.1, edgecolor='black', facecolor='white')
     ax.text(col + 0.5, row + 0.5, module, ha='center', va='center', fontsize=7)
 
