@@ -108,7 +108,7 @@ for module, (row, col) in modules.items():
     if module == 'M110':
         height = 1.25
         y_position = row
-        text_y = row + 0.725  # Center text in the visible part (3/8 of the way up)
+        text_y = row + 0.5  # Keep text centered in the original position
     elif module == 'M120':
         height = 1.25
         y_position = row - 0.25  # Extend downwards
@@ -117,9 +117,6 @@ for module, (row, col) in modules.items():
         height = 1
         y_position = row
         text_y = row + 0.5  # Center text for normal modules
-    
-    add_chamfered_rectangle(ax, (col, y_position), 1, height, 0.1, edgecolor='black', facecolor='white')
-    ax.text(col + 0.5, text_y, module, ha='center', va='center', fontsize=7)
     
     add_chamfered_rectangle(ax, (col, y_position), 1, height, 0.1, edgecolor='black', facecolor='white')
     ax.text(col + 0.5, text_y, module, ha='center', va='center', fontsize=7)
