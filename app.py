@@ -97,11 +97,31 @@ ax.set_ylim(0, 3.5)
 ax.set_aspect('equal')
 
 # Draw the M modules
-for module, (row, col) in modules.items():
-    height = 1.25 if module in ['M110'] else 1
+#for module, (row, col) in modules.items():
+#    height = 1.25 if module in ['M110'] else 1
     
-    add_chamfered_rectangle(ax, (col, row), 1, height, 0.1, edgecolor='black', facecolor='white')
-    ax.text(col + 0.5, row + 0.5, module, ha='center', va='center', fontsize=7)
+#    add_chamfered_rectangle(ax, (col, row), 1, height, 0.1, edgecolor='black', facecolor='white')
+#    ax.text(col + 0.5, row + 0.5, module, ha='center', va='center', fontsize=7)
+
+# Draw the M modules
+for module, (row, col) in modules.items():
+    if module == 'M110':
+        height = 1.25
+        y_position = row
+    elif module == 'M120':
+        height = 1.25
+        y_position = row - 0.25  # Extend downwards
+    else:
+        height = 1
+        y_position = row
+    
+    add_chamfered_rectangle(ax, (col, y_position), 1, height, 0.1, edgecolor='black', facecolor='white')
+    
+    # Adjust text position for M120
+    text_y = row + 0.5 if module != 'M120' else row + 0.25
+    ax.text(col + 0.5, text_y, module, ha='center', va='center', fontsize=7)
+
+
 
 # Draw the RACK modules
 for rack, (row, col) in racks.items():
