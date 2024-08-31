@@ -5,6 +5,7 @@ import math
 import matplotlib.transforms as transforms
 import pandas as pd
 import io
+from streamlit.components.v1 import html
 
 # Set custom font
 plt.rcParams['font.family'] = 'sans-serif'
@@ -92,6 +93,23 @@ st.markdown("""
     }
     .stSelectbox label, .stFileUploader label, .stButton button {
         font-size: 16px !important;
+    }
+    /* New styles for chat input */
+    .chat-input {
+        border-radius: 20px;
+        border: 1px solid #ccc;
+        padding: 10px 15px;
+        font-size: 16px;
+        width: 100%;
+    }
+    .chat-container {
+        display: flex;
+        align-items: center;
+    }
+    .chat-icon {
+        margin-left: 10px;
+        color: #4CAF50;
+        font-size: 20px;
     }
 </style>
 """, unsafe_allow_html=True)
@@ -233,8 +251,41 @@ elif selected_unit == 'GIR':
 # Display the figure
 st.pyplot(fig)
 
-# Chat-like interface for data interaction (without the "Data Interaction" heading)
-user_input = st.text_input("Ask a question about the FPSO data:")
+# Chat-like interface for data interaction
+col1, col2, col3 = st.columns([1, 3, 1])
+with col2:
+    html("""
+    <div class="chat-container">
+        <input type="text" class="chat-input" placeholder="Ask anything" id="chat-input">
+        <span class="chat-icon">⚪</span>
+    </div>
+    <script>
+    const input = document.getElementById('chat-input');
+    input.addEventListener('keypress', function(event) {
+        if (event.key === 'Enter') {
+            document.dispatchEvent(new CustomEvent('chat-submit', { detail: input.value }));
+            input.value = '';
+        }
+    });
+    </script>
+    """, height=70)
+
+    user_input = st.empty()
+
+# JavaScript to handle the custom event
+st.components.v1.html(
+    """
+    <script>
+    document.addEventListener('chat-submit', function(e) {
+        const data = e.detail;
+        window.parent.postMessage({type: 'streamlit:setComponentValue', value: data}, '*');
+    });
+    </script>
+    """,
+    height=0,
+)
+
+# Handle the submitted message
 if user_input:
     response = f"You asked: {user_input}\nThis is a placeholder response. Implement actual data processing here."
     st.text_area("Response:", value=response, height=100)
