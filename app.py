@@ -108,7 +108,7 @@ for module, (row, col) in modules.items():
     if module == 'M110':
         height = 1.25
         y_position = row
-        text_y = row + 0.5  # Keep text centered in the original position
+        text_y = row + 1.5  # Keep text centered in the original position
     elif module == 'M120':
         height = 1.25
         y_position = row - 0.25  # Extend downwards
