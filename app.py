@@ -4,7 +4,62 @@ import matplotlib.patches as patches
 import math
 import matplotlib.transforms as transforms
 
-# [Function definitions for add_rectangle, add_chamfered_rectangle, add_hexagon, and add_fwd remain the same]
+# Function to draw straight rectangles without chamfer
+def add_rectangle(ax, xy, width, height, **kwargs):
+    rectangle = patches.Rectangle(xy, width, height, **kwargs)
+    ax.add_patch(rectangle)
+
+# Function to draw chamfered rectangles
+def add_chamfered_rectangle(ax, xy, width, height, chamfer, **kwargs):
+    x, y = xy
+    coords = [
+        (x + chamfer, y),
+        (x + width - chamfer, y),
+        (x + width, y + chamfer),
+        (x + width, y + height - chamfer),
+        (x + width - chamfer, y + height),
+        (x + chamfer, y + height),
+        (x, y + height - chamfer),
+        (x, y + chamfer)
+    ]
+    polygon = patches.Polygon(coords, closed=True, **kwargs)
+    ax.add_patch(polygon)
+
+# Function to draw hexagons
+def add_hexagon(ax, xy, radius, **kwargs):
+    x, y = xy
+    vertices = [(x + radius * math.cos(2 * math.pi * n / 6), 
+                 y + radius * math.sin(2 * math.pi * n / 6)) 
+                for n in range(6)]
+    hexagon = patches.Polygon(vertices, closed=True, **kwargs)
+    ax.add_patch(hexagon)
+
+# Function to draw FWD module as a rotated trapezoid
+def add_fwd(ax, xy, width, height, **kwargs):
+    x, y = xy
+
+    # Define the trapezoid shape
+    top_width = width * 0.80  # Narrower at the top
+    coords = [
+        (0, 0),  # Bottom left
+        (width, 0),  # Bottom right
+        (width - (width - top_width) / 2, height),  # Top right
+        ((width - top_width) / 2, height)  # Top left
+    ]
+
+    # Create the trapezoid
+    trapezoid = patches.Polygon(coords, closed=True, **kwargs)
+
+    # Create a rotation transform
+    t = transforms.Affine2D().rotate_deg(90).translate(x, y)
+    trapezoid.set_transform(t + ax.transData)
+
+    # Add the rotated trapezoid
+    ax.add_patch(trapezoid)
+
+    # Add rotated text
+    text_t = transforms.Affine2D().rotate_deg(90).translate(x + height/2, y + width/2)
+    ax.text(0, -1, "FWD", ha='center', va='center', fontsize=7, weight='bold', transform=text_t + ax.transData)
 
 # Streamlit app layout
 st.sidebar.title('FPSO Units')
