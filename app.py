@@ -196,7 +196,7 @@ with col1:
     st.pyplot(fig)
 
 with col2:
-    st.markdown("### Chat Interface")
+    st.markdown("### Methods Engineer")
     
     if 'messages' not in st.session_state:
         st.session_state.messages = [
