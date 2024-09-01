@@ -200,7 +200,7 @@ with col2:
     
     if 'messages' not in st.session_state:
         st.session_state.messages = [
-            {"role": "assistant", "content": "Hello! How can I assist you today?"}
+            {"role": "assistant", "content": "Hey bud! My name is Ataliba, I am the Inspection Methods Engineer for Area B and I am more than happy to assist you today. Pls do let me know how can I be of a help today?"}
         ]
 
     chat_container = st.container()
