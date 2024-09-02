@@ -107,7 +107,7 @@ def draw_gir(ax):
     ax.text(6, 1.75, "GIR Layout\n(Not implemented)", ha='center', va='center', fontsize=16, weight='bold')
 
 # Streamlit app
-st.set_page_config(page_title="FPSO Units Visualization", layout="wide")
+st.set_page_config(page_title="B17 - FPSO Units", layout="wide")
 
 # Custom CSS
 st.markdown("""
@@ -200,7 +200,7 @@ with col2:
     
     if 'messages' not in st.session_state:
         st.session_state.messages = [
-            {"role": "assistant", "content": "Hey bud! My name it's Ataliba and I am more than happy to assist you today."}
+            {"role": "assistant", "content": "Hey bud! This is Ataliba here and I am ready to help you today!"}
         ]
 
     chat_container = st.container()
