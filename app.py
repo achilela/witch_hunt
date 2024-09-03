@@ -211,7 +211,7 @@ with col2:
             else:
                 st.markdown(f"<div class='bot-message'>{message['content']}</div>", unsafe_allow_html=True)
 
-    user_input = st.text_input("Let me know your queries here on the chat below...")
+    user_input = st.text_input("Let me know your queries on the chat below...")
     if st.button("Send"):
         if user_input:
             st.session_state.messages.append({"role": "user", "content": user_input})
