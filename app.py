@@ -174,6 +174,34 @@ if uploaded_file is not None:
     st.sidebar.success(f"File {uploaded_file.name} successfully uploaded and processed!")
 
 # Main content
+st.markdown("### Methods Engineer")
+
+# Chat interface at the top, full width
+if 'messages' not in st.session_state:
+    st.session_state.messages = [
+        {"role": "assistant", "content": "Hey! This is Ataliba here, how can I help?!"}
+    ]
+
+chat_container = st.container()
+with chat_container:
+    for message in st.session_state.messages:
+        if message["role"] == "user":
+            st.markdown(f"<div class='user-message'>{message['content']}</div>", unsafe_allow_html=True)
+        else:
+            st.markdown(f"<div class='bot-message'>{message['content']}</div>", unsafe_allow_html=True)
+
+col1, col2, col3 = st.columns([1, 3, 1])
+with col2:
+    user_input = st.text_input("Let me know your queries on the chat below...")
+    if st.button("Send"):
+        if user_input:
+            st.session_state.messages.append({"role": "user", "content": user_input})
+            response = f"You asked: {user_input}\nThis is a placeholder response. Implement actual data processing here."
+            st.session_state.messages.append({"role": "assistant", "content": response})
+            st.experimental_rerun()
+
+# FPSO Visualization at the bottom
+st.markdown("### FPSO Visualization")
 col1, col2 = st.columns([2, 1])
 
 with col1:
@@ -194,27 +222,3 @@ with col1:
         draw_gir(ax)
 
     st.pyplot(fig)
-
-with col2:
-    st.markdown("### Methods Engineer")
-    
-    if 'messages' not in st.session_state:
-        st.session_state.messages = [
-            {"role": "assistant", "content": "Hey! This is Ataliba here, how can I help?!"}
-        ]
-
-    chat_container = st.container()
-    with chat_container:
-        for message in st.session_state.messages:
-            if message["role"] == "user":
-                st.markdown(f"<div class='user-message'>{message['content']}</div>", unsafe_allow_html=True)
-            else:
-                st.markdown(f"<div class='bot-message'>{message['content']}</div>", unsafe_allow_html=True)
-
-    user_input = st.text_input("Let me know your queries on the chat below...")
-    if st.button("Send"):
-        if user_input:
-            st.session_state.messages.append({"role": "user", "content": user_input})
-            response = f"You asked: {user_input}\nThis is a placeholder response. Implement actual data processing here."
-            st.session_state.messages.append({"role": "assistant", "content": response})
-            st.experimental_rerun()
