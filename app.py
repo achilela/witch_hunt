@@ -17,21 +17,6 @@ import tempfile
 # Load environment variables
 load_dotenv()
 
-# Set up OctoAI API key
-OCTOAI_API_KEY = os.environ.get("OCTOAI_API_KEY")
-
-# Set up LlamaIndex
-LlamaGlobalSettings.embed_model = OctoAIEmbedding()
-
-llm = OpenAILike(
-    model="meta-llama-3.1-70b-instruct",
-    api_base="https://text.octoai.run/v1",
-    api_key=OCTOAI_API_KEY,
-    context_window=40000,
-    is_function_calling_model=True,
-    is_chat_model=True,
-)
-
 # FPSO Layout App functions
 def add_rectangle(ax, xy, width, height, **kwargs):
     rectangle = patches.Rectangle(xy, width, height, **kwargs)
@@ -180,122 +165,138 @@ st.markdown("""
 
 # Sidebar
 st.sidebar.title('FPSO Units')
-selected_unit = st.sidebar.selectbox('Select FPSO Unit', ['CLV', 'PAZ', 'DAL', 'GIR'])
 
-if st.sidebar.button('Let me handle your SAP Data'):
-    st.sidebar.success('SAP data pre-processing started. This may take a few moments.')
-    # Placeholder for SAP data processing
-    st.sidebar.success('SAP data pre-processing completed!')
+# Add input for OCTOAI API key in the sidebar
+OCTOAI_API_KEY = st.sidebar.text_input("Enter your OCTOAI API key:", type="password")
 
-# File uploader for documents
-uploaded_files = st.sidebar.file_uploader("Upload PDF Documents", type=['pdf'], accept_multiple_files=True)
+# Only proceed with LlamaIndex setup if API key is provided
+if OCTOAI_API_KEY:
+    # Set up LlamaIndex
+    LlamaGlobalSettings.embed_model = OctoAIEmbedding(api_key=OCTOAI_API_KEY)
 
-# Initialize session state for indexes 
-# Initialize session state for indexes 
-# Initialize session state for indexes 
-# Initialize session state for indexes 
-# Initialize session state for indexes and agent
-if 'storage_context' not in st.session_state:
-    st.session_state.storage_context = StorageContext.from_defaults()
-if 'agent' not in st.session_state:
-    st.session_state.agent = None
-
-# Load Documents
-try:
-    storage_context = StorageContext.from_defaults(persist_dir="./storage")
-    index = load_index_from_storage(storage_context)
-    index_loaded = True
-except:
-    index_loaded = False
-
-# Process uploaded files and create indexes
-
-if uploaded_files and not index_loaded:
-    all_docs = []
-    for uploaded_file in uploaded_files:
-        with tempfile.NamedTemporaryFile(delete=False, suffix='.pdf') as temp_file:
-            temp_file.write(uploaded_file.getvalue())
-            temp_file_path = temp_file.name
-
-        # Create index from the uploaded document
-        docs = SimpleDirectoryReader(input_files=[temp_file_path]).load_data()
-        all_docs.extend(docs)
-
-        os.unlink(temp_file_path)  # Remove the temporary file
-
-    # Create index from all documents
-    index = VectorStoreIndex.from_documents(all_docs, storage_context=st.session_state.storage_context, show_progress=False)
-
-    # Persist index
-    st.session_state.storage_context.persist(persist_dir="./storage")
-    st.sidebar.success(f"{len(uploaded_files)} document(s) processed and indexed.")
-
-    index_loaded = True
-
-
-if index_loaded:
-    # Create query engine
-    query_engine = index.as_query_engine(similarity_top_k=3, llm=llm)
-
-    # Create query engine tool
-    query_engine_tool = QueryEngineTool(
-        query_engine=query_engine,
-        metadata=ToolMetadata(
-            name="document_index",
-            description="Provides information from the uploaded documents. Use a detailed plain text question as input to the tool."
-        )
+    llm = OpenAILike(
+        model="meta-llama-3.1-70b-instruct",
+        api_base="https://text.octoai.run/v1",
+        api_key=OCTOAI_API_KEY,
+        context_window=40000,
+        is_function_calling_model=True,
+        is_chat_model=True,
     )
 
-    # Create or update the ReActAgent
-    st.session_state.agent = ReActAgent.from_tools([query_engine_tool], llm=llm, verbose=True, max_turns=10)
+    # Rest of the sidebar
+    selected_unit = st.sidebar.selectbox('Select FPSO Unit', ['CLV', 'PAZ', 'DAL', 'GIR'])
 
-# Main content
-# Chat interface at the top center
-st.markdown("### Methods Engineer")
+    if st.sidebar.button('Let me handle your SAP Data'):
+        st.sidebar.success('SAP data pre-processing started. This may take a few moments.')
+        # Placeholder for SAP data processing
+        st.sidebar.success('SAP data pre-processing completed!')
 
-col1, col2, col3 = st.columns([1, 2, 1])
-with col2:
-    if 'messages' not in st.session_state:
-        st.session_state.messages = [
-            {"role": "assistant", "content": "Hey! This is Ataliba here, how can I help?!"}
-        ]
+    # File uploader for documents
+    uploaded_files = st.sidebar.file_uploader("Upload PDF Documents", type=['pdf'], accept_multiple_files=True)
 
-    chat_container = st.container()
-    with chat_container:
-        for message in st.session_state.messages:
-            if message["role"] == "user":
-                st.markdown(f"<div class='user-message'>{message['content']}</div>", unsafe_allow_html=True)
-            else:
-                st.markdown(f"<div class='bot-message'>{message['content']}</div>", unsafe_allow_html=True)
+    # Initialize session state for indexes and agent
+    if 'storage_context' not in st.session_state:
+        st.session_state.storage_context = StorageContext.from_defaults()
+    if 'agent' not in st.session_state:
+        st.session_state.agent = None
 
-    user_input = st.text_input("Let me know your queries on the chat below...")
-    if st.button("Send"):
-        if user_input:
-            st.session_state.messages.append({"role": "user", "content": user_input})
-            if st.session_state.agent:
-                # Use the ReActAgent to generate a response
-                response = st.session_state.agent.chat(user_input)
-                st.session_state.messages.append({"role": "assistant", "content": str(response)})
-            else:
-                st.session_state.messages.append({"role": "assistant", "content": "Please upload documents first to enable the AI assistant."})
-            st.experimental_rerun()
+    # Load Documents
+    try:
+        storage_context = StorageContext.from_defaults(persist_dir="./storage")
+        index = load_index_from_storage(storage_context)
+        index_loaded = True
+    except:
+        index_loaded = False
 
-# FPSO Visualization at the bottom
-st.markdown("### FPSO Visualization")
-fig, ax = plt.subplots(figsize=(12, 8))
-ax.set_xlim(0, 12)
-ax.set_ylim(0, 3.5)
-ax.set_aspect('equal')
-ax.grid(False)
-ax.set_facecolor('#E6F3FF')
+    # Process uploaded files and create indexes
+    if uploaded_files and not index_loaded:
+        all_docs = []
+        for uploaded_file in uploaded_files:
+            with tempfile.NamedTemporaryFile(delete=False, suffix='.pdf') as temp_file:
+                temp_file.write(uploaded_file.getvalue())
+                temp_file_path = temp_file.name
 
-if selected_unit == 'CLV':
-    draw_clv(ax)
-elif selected_unit == 'PAZ':
-    draw_paz(ax)
-elif selected_unit == 'DAL':
-    draw_dal(ax)
-elif selected_unit == 'GIR':
-    draw_gir(ax)
+            # Create index from the uploaded document
+            docs = SimpleDirectoryReader(input_files=[temp_file_path]).load_data()
+            all_docs.extend(docs)
 
-st.pyplot(fig)
+            os.unlink(temp_file_path)  # Remove the temporary file
+
+        # Create index from all documents
+        index = VectorStoreIndex.from_documents(all_docs, storage_context=st.session_state.storage_context, show_progress=False)
+
+        # Persist index
+        st.session_state.storage_context.persist(persist_dir="./storage")
+        st.sidebar.success(f"{len(uploaded_files)} document(s) processed and indexed.")
+
+        index_loaded = True
+
+    if index_loaded:
+        # Create query engine
+        query_engine = index.as_query_engine(similarity_top_k=3, llm=llm)
+
+        # Create query engine tool
+        query_engine_tool = QueryEngineTool(
+            query_engine=query_engine,
+            metadata=ToolMetadata(
+                name="document_index",
+                description="Provides information from the uploaded documents. Use a detailed plain text question as input to the tool."
+            )
+        )
+
+        # Create or update the ReActAgent
+        st.session_state.agent = ReActAgent.from_tools([query_engine_tool], llm=llm, verbose=True, max_turns=10)
+
+    # Main content
+    # Chat interface at the top center
+    st.markdown("### Methods Engineer")
+
+    col1, col2, col3 = st.columns([1, 2, 1])
+    with col2:
+        if 'messages' not in st.session_state:
+            st.session_state.messages = [
+                {"role": "assistant", "content": "Hey! This is Ataliba here, how can I help?!"}
+            ]
+
+        chat_container = st.container()
+        with chat_container:
+            for message in st.session_state.messages:
+                if message["role"] == "user":
+                    st.markdown(f"<div class='user-message'>{message['content']}</div>", unsafe_allow_html=True)
+                else:
+                    st.markdown(f"<div class='bot-message'>{message['content']}</div>", unsafe_allow_html=True)
+
+        user_input = st.text_input("Let me know your queries on the chat below...")
+        if st.button("Send"):
+            if user_input:
+                st.session_state.messages.append({"role": "user", "content": user_input})
+                if st.session_state.agent:
+                    # Use the ReActAgent to generate a response
+                    response = st.session_state.agent.chat(user_input)
+                    st.session_state.messages.append({"role": "assistant", "content": str(response)})
+                else:
+                    st.session_state.messages.append({"role": "assistant", "content": "Please upload documents first to enable the AI assistant."})
+                st.experimental_rerun()
+
+    # FPSO Visualization at the bottom
+    st.markdown("### FPSO Visualization")
+    fig, ax = plt.subplots(figsize=(12, 8))
+    ax.set_xlim(0, 12)
+    ax.set_ylim(0, 3.5)
+    ax.set_aspect('equal')
+    ax.grid(False)
+    ax.set_facecolor('#E6F3FF')
+
+    if selected_unit == 'CLV':
+        draw_clv(ax)
+    elif selected_unit == 'PAZ':
+        draw_paz(ax)
+    elif selected_unit == 'DAL':
+        draw_dal(ax)
+    elif selected_unit == 'GIR':
+        draw_gir(ax)
+
+    st.pyplot(fig)
+
+else:
+    st.warning("Please enter your OCTOAI API key in the sidebar to use the app.")
