@@ -118,6 +118,29 @@ def draw_gir(ax):
 # Streamlit app
 st.set_page_config(page_title="B17 - FPSO Units", layout="wide")
 
+import streamlit as st
+import matplotlib.pyplot as plt
+import matplotlib.patches as patches
+import math
+import matplotlib.transforms as transforms
+import pandas as pd
+import os
+from dotenv import load_dotenv
+from llama_index.core import SimpleDirectoryReader, VectorStoreIndex, StorageContext, load_index_from_storage
+from llama_index.core.tools import QueryEngineTool, ToolMetadata
+from llama_index.embeddings.octoai import OctoAIEmbedding
+from llama_index.core import Settings as LlamaGlobalSettings
+from llama_index.core.agent import ReActAgent
+from llama_index.llms.openai_like import OpenAILike
+import tempfile
+import asyncio
+
+# Load environment variables
+load_dotenv()
+
+# Streamlit app
+st.set_page_config(page_title="B17 - FPSO Units", layout="wide")
+
 # Custom CSS
 st.markdown("""
 <style>
@@ -159,6 +182,10 @@ st.markdown("""
         background-color: #4CAF50;
         color: #ffffff;
         border-radius: 20px;
+    }
+    /* Increase chat input width */
+    .chat-input {
+        width: 100% !important;
     }
 </style>
 """, unsafe_allow_html=True)
@@ -251,7 +278,7 @@ if OCTOAI_API_KEY:
     # Chat interface at the top center
     st.markdown("### Methods Engineer")
 
-    col1, col2, col3 = st.columns([1, 2, 1])
+    col1, col2, col3 = st.columns([1, 3, 1])
     with col2:
         if 'messages' not in st.session_state:
             st.session_state.messages = [
@@ -266,18 +293,32 @@ if OCTOAI_API_KEY:
                 else:
                     st.markdown(f"<div class='bot-message'>{message['content']}</div>", unsafe_allow_html=True)
 
-        user_input = st.text_input("Let me know your queries on the chat below...")
+        user_input = st.text_input("Let me know your queries on the chat below...", key="chat_input", max_chars=None)
         if st.button("Send"):
             if user_input:
                 st.session_state.messages.append({"role": "user", "content": user_input})
                 if st.session_state.agent:
-                    # Use the ReActAgent to generate a response
-                    response = st.session_state.agent.chat(user_input)
-                    st.session_state.messages.append({"role": "assistant", "content": str(response)})
+                    with st.empty():
+                        st.write("Let me think...")
+                        # Simulate streaming response
+                        async def stream_response():
+                            response = st.session_state.agent.chat(user_input)
+                            words = str(response).split()
+                            full_response = ""
+                            for word in words:
+                                full_response += word + " "
+                                yield full_response
+                                await asyncio.sleep(0.05)  # Adjust the delay as needed
+
+                        # Display streaming response
+                        response_placeholder = st.empty()
+                        for partial_response in asyncio.run(stream_response()):
+                            response_placeholder.markdown(f"<div class='bot-message'>{partial_response}</div>", unsafe_allow_html=True)
+                        
+                        st.session_state.messages.append({"role": "assistant", "content": partial_response})
                 else:
                     st.session_state.messages.append({"role": "assistant", "content": "Please upload documents first to enable the AI assistant."})
                 
-                # Use st.rerun() instead of st.experimental_rerun()
                 st.rerun()
 
     # FPSO Visualization at the bottom
