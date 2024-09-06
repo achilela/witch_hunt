@@ -249,38 +249,36 @@ if OCTOAI_API_KEY:
 
     # Main content
     # Chat interface at the top center
-    # Main content
-# Chat interface at the top center
-st.markdown("### Methods Engineer")
+    st.markdown("### Methods Engineer")
 
-col1, col2, col3 = st.columns([1, 2, 1])
-with col2:
-    if 'messages' not in st.session_state:
-        st.session_state.messages = [
-            {"role": "assistant", "content": "Hey! This is Ataliba here, how can I help?!"}
-        ]
+    col1, col2, col3 = st.columns([1, 2, 1])
+    with col2:
+        if 'messages' not in st.session_state:
+            st.session_state.messages = [
+                {"role": "assistant", "content": "Hey! This is Ataliba here, how can I help?!"}
+            ]
 
-    chat_container = st.container()
-    with chat_container:
-        for message in st.session_state.messages:
-            if message["role"] == "user":
-                st.markdown(f"<div class='user-message'>{message['content']}</div>", unsafe_allow_html=True)
-            else:
-                st.markdown(f"<div class='bot-message'>{message['content']}</div>", unsafe_allow_html=True)
+        chat_container = st.container()
+        with chat_container:
+            for message in st.session_state.messages:
+                if message["role"] == "user":
+                    st.markdown(f"<div class='user-message'>{message['content']}</div>", unsafe_allow_html=True)
+                else:
+                    st.markdown(f"<div class='bot-message'>{message['content']}</div>", unsafe_allow_html=True)
 
-    user_input = st.text_input("Let me know your queries on the chat below...")
-    if st.button("Send"):
-        if user_input:
-            st.session_state.messages.append({"role": "user", "content": user_input})
-            if st.session_state.agent:
-                # Use the ReActAgent to generate a response
-                response = st.session_state.agent.chat(user_input)
-                st.session_state.messages.append({"role": "assistant", "content": str(response)})
-            else:
-                st.session_state.messages.append({"role": "assistant", "content": "Please upload documents first to enable the AI assistant."})
-            
-            # Instead of using st.experimental_rerun(), we'll use st.rerun()
-            st.rerun()
+        user_input = st.text_input("Let me know your queries on the chat below...")
+        if st.button("Send"):
+            if user_input:
+                st.session_state.messages.append({"role": "user", "content": user_input})
+                if st.session_state.agent:
+                    # Use the ReActAgent to generate a response
+                    response = st.session_state.agent.chat(user_input)
+                    st.session_state.messages.append({"role": "assistant", "content": str(response)})
+                else:
+                    st.session_state.messages.append({"role": "assistant", "content": "Please upload documents first to enable the AI assistant."})
+                
+                # Use st.rerun() instead of st.experimental_rerun()
+                st.rerun()
 
     # FPSO Visualization at the bottom
     st.markdown("### FPSO Visualization")
