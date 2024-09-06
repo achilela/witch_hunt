@@ -6,7 +6,7 @@ import matplotlib.transforms as transforms
 import pandas as pd
 import os
 from dotenv import load_dotenv
-from llama_index.core import SimpleDirectoryReader, VectorStoreIndex, Document
+from llama_index.core import SimpleDirectoryReader, VectorStoreIndex, StorageContext, load_index_from_storage
 from llama_index.core.tools import QueryEngineTool, ToolMetadata
 from llama_index.embeddings.octoai import OctoAIEmbedding
 from llama_index.core import Settings as LlamaGlobalSettings
@@ -191,43 +191,53 @@ if st.sidebar.button('Let me handle your SAP Data'):
 uploaded_files = st.sidebar.file_uploader("Upload PDF Documents", type=['pdf'], accept_multiple_files=True)
 
 # Initialize session state for indexes and agent
-if 'indexes' not in st.session_state:
-    st.session_state.indexes = {}
+if 'storage_context' not in st.session_state:
+    st.session_state.storage_context = StorageContext.from_defaults()
 if 'agent' not in st.session_state:
     st.session_state.agent = None
 
+# Load Documents
+try:
+    storage_context = StorageContext.from_defaults(persist_dir="./storage")
+    index = load_index_from_storage(storage_context)
+    index_loaded = True
+except:
+    index_loaded = False
+
 # Process uploaded files and create indexes
-if uploaded_files:
+if uploaded_files and not index_loaded:
     for uploaded_file in uploaded_files:
-        if uploaded_file.name not in st.session_state.indexes:
-            with tempfile.NamedTemporaryFile(delete=False, suffix='.pdf') as temp_file:
-                temp_file.write(uploaded_file.getvalue())
-                temp_file_path = temp_file.name
+        with tempfile.NamedTemporaryFile(delete=False, suffix='.pdf') as temp_file:
+            temp_file.write(uploaded_file.getvalue())
+            temp_file_path = temp_file.name
 
-            # Create index from the uploaded document
-            docs = SimpleDirectoryReader(input_files=[temp_file_path]).load_data()
-            index = VectorStoreIndex.from_documents(docs, show_progress=True)
-            st.session_state.indexes[uploaded_file.name] = index
+        # Create index from the uploaded document
+        docs = SimpleDirectoryReader(input_files=[temp_file_path]).load_data()
+        index = VectorStoreIndex.from_documents(docs, storage_context=st.session_state.storage_context, show_progress=True)
 
-            os.unlink(temp_file_path)  # Remove the temporary file
+        os.unlink(temp_file_path)  # Remove the temporary file
 
+    # Persist index
+    st.session_state.storage_context.persist(persist_dir="./storage")
     st.sidebar.success(f"{len(uploaded_files)} document(s) processed and indexed.")
 
-    # Create query engine tools from the indexes
-    query_engine_tools = []
-    for file_name, index in st.session_state.indexes.items():
-        query_engine = index.as_query_engine(similarity_top_k=3, llm=llm)
-        tool = QueryEngineTool(
-            query_engine=query_engine,
-            metadata=ToolMetadata(
-                name=file_name,
-                description=f"Provides information from the document {file_name}. Use a detailed plain text question as input to the tool."
-            )
+    index_loaded = True
+
+if index_loaded:
+    # Create query engine
+    query_engine = index.as_query_engine(similarity_top_k=3, llm=llm)
+
+    # Create query engine tool
+    query_engine_tool = QueryEngineTool(
+        query_engine=query_engine,
+        metadata=ToolMetadata(
+            name="document_index",
+            description="Provides information from the uploaded documents. Use a detailed plain text question as input to the tool."
         )
-        query_engine_tools.append(tool)
+    )
 
     # Create or update the ReActAgent
-    st.session_state.agent = ReActAgent.from_tools(query_engine_tools, llm=llm, verbose=True, max_turns=10)
+    st.session_state.agent = ReActAgent.from_tools([query_engine_tool], llm=llm, verbose=True, max_turns=10)
 
 # Main content
 # Chat interface at the top center
