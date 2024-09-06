@@ -190,6 +190,10 @@ if st.sidebar.button('Let me handle your SAP Data'):
 # File uploader for documents
 uploaded_files = st.sidebar.file_uploader("Upload PDF Documents", type=['pdf'], accept_multiple_files=True)
 
+# Initialize session state for indexes 
+# Initialize session state for indexes 
+# Initialize session state for indexes 
+# Initialize session state for indexes 
 # Initialize session state for indexes and agent
 if 'storage_context' not in st.session_state:
     st.session_state.storage_context = StorageContext.from_defaults()
@@ -205,7 +209,9 @@ except:
     index_loaded = False
 
 # Process uploaded files and create indexes
+
 if uploaded_files and not index_loaded:
+    all_docs = []
     for uploaded_file in uploaded_files:
         with tempfile.NamedTemporaryFile(delete=False, suffix='.pdf') as temp_file:
             temp_file.write(uploaded_file.getvalue())
@@ -213,15 +219,19 @@ if uploaded_files and not index_loaded:
 
         # Create index from the uploaded document
         docs = SimpleDirectoryReader(input_files=[temp_file_path]).load_data()
-        index = VectorStoreIndex.from_documents(docs, storage_context=st.session_state.storage_context, show_progress=True)
+        all_docs.extend(docs)
 
         os.unlink(temp_file_path)  # Remove the temporary file
+
+    # Create index from all documents
+    index = VectorStoreIndex.from_documents(all_docs, storage_context=st.session_state.storage_context, show_progress=False)
 
     # Persist index
     st.session_state.storage_context.persist(persist_dir="./storage")
     st.sidebar.success(f"{len(uploaded_files)} document(s) processed and indexed.")
 
     index_loaded = True
+
 
 if index_loaded:
     # Create query engine
