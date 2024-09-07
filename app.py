@@ -276,7 +276,7 @@ if OCTOAI_API_KEY:
 
     @st.cache_data
     async def run_async_query(user_input):
-    async def stream_response():
+        async def stream_response():
         response = await st.session_state.agent.achat(user_input)
         words = str(response).split()
         full_response = ""
