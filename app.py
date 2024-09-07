@@ -273,7 +273,7 @@ if OCTOAI_API_KEY:
         if 'messages' not in st.session_state:
             st.session_state.messages = []
 
-        user_input = st.text_input("Let me know your queries on the chat below...", key="chat_input", max_chars=None)
+        user_input = st.text_input("This is Ataliba here, I am here to help you...", key="chat_input", max_chars=None)
 
         if st.button("Send"):
             if user_input:
