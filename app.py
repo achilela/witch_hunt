@@ -288,7 +288,7 @@ async def run_async_query(user_input):
     return [chunk async for chunk in stream_response()]
 
         
-        if st.button("Send"):
+    if st.button("Send"):
             if user_input:
                 st.session_state.messages.append({"role": "user", "content": user_input})
                 if st.session_state.agent:
