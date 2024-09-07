@@ -277,13 +277,13 @@ if OCTOAI_API_KEY:
     @st.cache_data
     async def run_async_query(user_input):
         async def stream_response():
-        response = await st.session_state.agent.achat(user_input)
-        words = str(response).split()
-        full_response = ""
-        for word in words:
-            full_response += word + " "
-            yield full_response
-            await asyncio.sleep(0.05)  # Adjust the delay as needed
+            response = await st.session_state.agent.achat(user_input)
+            words = str(response).split()
+            full_response = ""
+            for word in words:
+                full_response += word + " "
+                yield full_response
+                await asyncio.sleep(0.05)  # Adjust the delay as needed
 
     return [chunk async for chunk in stream_response()]
 
