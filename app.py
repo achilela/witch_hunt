@@ -260,7 +260,7 @@ if OCTOAI_API_KEY:
         for word in words:
             full_response += word + " "
             yield full_response
-            await asyncio.sleep(0.05)  # Adjust the delay as needed
+            await asyncio.sleep(0.01)  # Increased speed: reduced delay from 0.05 to 0.01
 
     # Main content
     # Chat interface at the top center
@@ -272,14 +272,6 @@ if OCTOAI_API_KEY:
             st.session_state.messages = [
                 {"role": "assistant", "content": "Hey! This is Ataliba here, how can I help?!"}
             ]
-
-        chat_container = st.container()
-        with chat_container:
-            for message in st.session_state.messages:
-                if message["role"] == "user":
-                    st.markdown(f"<div class='user-message'>{message['content']}</div>", unsafe_allow_html=True)
-                else:
-                    st.markdown(f"<div class='bot-message'>{message['content']}</div>", unsafe_allow_html=True)
 
         user_input = st.text_input("Let me know your queries on the chat below...", key="chat_input", max_chars=None)
 
@@ -306,6 +298,15 @@ if OCTOAI_API_KEY:
                 
                 st.rerun()
 
+        # Display only the current interaction
+        chat_container = st.container()
+        with chat_container:
+            if len(st.session_state.messages) > 1:
+                st.markdown(f"<div class='user-message'>{st.session_state.messages[-2]['content']}</div>", unsafe_allow_html=True)
+            if len(st.session_state.messages) > 0 and st.session_state.messages[-1]['role'] == 'assistant':
+                st.markdown(f"<div class='bot-message'>{st.session_state.messages[-1]['content']}</div>", unsafe_allow_html=True)
+        
+    
     # FPSO Visualization at the bottom
     st.markdown("### FPSO Visualization")
     fig, ax = plt.subplots(figsize=(12, 8))
