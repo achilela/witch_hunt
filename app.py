@@ -309,36 +309,6 @@ async def run_async_query(user_input):
                     st.session_state.messages.append({"role": "assistant", "content": "Please upload documents first to enable the AI assistant."})
         
                 st.rerun()
-
-
-
-
-
-# Inside your Streamlit app
-if st.button("Send"):
-    if user_input:
-        st.session_state.messages.append({"role": "user", "content": user_input})
-        if st.session_state.agent:
-            with st.empty():
-                st.write("Let me think...")
-                # Run the async function
-                response_chunks = asyncio.run(run_async_query(user_input))
-                
-                # Display streaming response
-                response_placeholder = st.empty()
-                full_response = ""
-                for chunk in response_chunks:
-                    full_response = chunk
-                    response_placeholder.markdown(f"<div class='bot-message'>{full_response}</div>", unsafe_allow_html=True)
-                
-                st.session_state.messages.append({"role": "assistant", "content": full_response})
-        else:
-            st.session_state.messages.append({"role": "assistant", "content": "Please upload documents first to enable the AI assistant."})
-        
-        st.rerun()
-
-
-
     
 
     # FPSO Visualization at the bottom
