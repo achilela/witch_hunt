@@ -253,62 +253,59 @@ if OCTOAI_API_KEY:
         # Create or update the ReActAgent
         st.session_state.agent = ReActAgent.from_tools([query_engine_tool], llm=llm, verbose=True, max_turns=10)
 
+    
+async def stream_response(agent, user_input):
+    response = await agent.achat(user_input)
+    words = str(response).split()
+    full_response = ""
+    for word in words:
+        full_response += word + " "
+        yield full_response
+        await asyncio.sleep(0.05)  # Adjust the delay as needed
+
     # Main content
     # Chat interface at the top center
-    st.markdown("### Methods Engineer")
+st.markdown("### Methods Engineer")
 
-    col1, col2, col3 = st.columns([1, 3, 1])
-    with col2:
-        if 'messages' not in st.session_state:
-            st.session_state.messages = [
-                {"role": "assistant", "content": "Hey! This is Ataliba here, how can I help?!"}
-            ]
+col1, col2, col3 = st.columns([1, 3, 1])
+with col2:
+    if 'messages' not in st.session_state:
+        st.session_state.messages = [
+            {"role": "assistant", "content": "Hey! This is Ataliba here, how can I help?!"}
+        ]
 
-        chat_container = st.container()
-        with chat_container:
-            for message in st.session_state.messages:
-                if message["role"] == "user":
-                    st.markdown(f"<div class='user-message'>{message['content']}</div>", unsafe_allow_html=True)
-                else:
-                    st.markdown(f"<div class='bot-message'>{message['content']}</div>", unsafe_allow_html=True)
+    chat_container = st.container()
+    with chat_container:
+        for message in st.session_state.messages:
+            if message["role"] == "user":
+                st.markdown(f"<div class='user-message'>{message['content']}</div>", unsafe_allow_html=True)
+            else:
+                st.markdown(f"<div class='bot-message'>{message['content']}</div>", unsafe_allow_html=True)
 
-        user_input = st.text_input("Let me know your queries on the chat below...", key="chat_input", max_chars=None)
+    user_input = st.text_input("Let me know your queries on the chat below...", key="chat_input", max_chars=None)
 
-    @st.cache_data
-    async def run_async_query(user_input):
-        async def stream_response():
-            response = await st.session_state.agent.achat(user_input)
-            words = str(response).split()
-            full_response = ""
-            for word in words:
-                full_response += word + " "
-                yield full_response
-                await asyncio.sleep(0.05)  # Adjust the delay as needed
-
-        return [chunk async for chunk in stream_response()]
-
-        
     if st.button("Send"):
-            if user_input:
-                st.session_state.messages.append({"role": "user", "content": user_input})
-                if st.session_state.agent:
-                    with st.empty():
-                        st.write("Let me think...")
-                        # Simulate streaming response
-                         # Run the async function
-                        response_chunks = asyncio.run(run_async_query(user_input))
-                        # Display streaming response
+        if user_input:
+            st.session_state.messages.append({"role": "user", "content": user_input})
+            if st.session_state.agent:
+                with st.empty():
+                    st.write("Let me think...")
+                    
+                    # Use asyncio.run to execute the coroutine
+                    async def run_stream():
                         response_placeholder = st.empty()
                         full_response = ""
-                        for chunk in response_chunks:
+                        async for chunk in stream_response(st.session_state.agent, user_input):
                             full_response = chunk
                             response_placeholder.markdown(f"<div class='bot-message'>{full_response}</div>", unsafe_allow_html=True)
-                
-                        st.session_state.messages.append({"role": "assistant", "content": full_response})
-                else:
-                    st.session_state.messages.append({"role": "assistant", "content": "Please upload documents first to enable the AI assistant."})
-        
-                st.rerun()
+                        return full_response
+
+                    full_response = asyncio.run(run_stream())
+                    st.session_state.messages.append({"role": "assistant", "content": full_response})
+            else:
+                st.session_state.messages.append({"role": "assistant", "content": "Please upload documents first to enable the AI assistant."})
+            
+            st.rerun()
     
 
     # FPSO Visualization at the bottom
