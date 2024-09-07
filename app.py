@@ -264,14 +264,14 @@ if OCTOAI_API_KEY:
 
     # Main content
     # Chat interface at the top center
-    st.markdown("### Methods Engineer")
+    
+    st.markdown("<h3 style='text-align: center; font-size: 20px; font-weight: normal;'>Methods Engineer</h3>", unsafe_allow_html=True)
+
 
     col1, col2, col3 = st.columns([1, 3, 1])
     with col2:
         if 'messages' not in st.session_state:
-            st.session_state.messages = [
-                {"role": "assistant", "content": "Hey! This is Ataliba here, how can I help?!"}
-            ]
+            st.session_state.messages = []
 
         user_input = st.text_input("Let me know your queries on the chat below...", key="chat_input", max_chars=None)
 
