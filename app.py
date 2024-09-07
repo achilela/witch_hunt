@@ -274,8 +274,8 @@ if OCTOAI_API_KEY:
 
         user_input = st.text_input("Let me know your queries on the chat below...", key="chat_input", max_chars=None)
 
-@st.cache_data
-async def run_async_query(user_input):
+    @st.cache_data
+    async def run_async_query(user_input):
     async def stream_response():
         response = await st.session_state.agent.achat(user_input)
         words = str(response).split()
