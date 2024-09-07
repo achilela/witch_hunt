@@ -285,7 +285,7 @@ if OCTOAI_API_KEY:
                 yield full_response
                 await asyncio.sleep(0.05)  # Adjust the delay as needed
 
-    return [chunk async for chunk in stream_response()]
+        return [chunk async for chunk in stream_response()]
 
         
     if st.button("Send"):
