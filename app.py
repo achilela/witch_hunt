@@ -254,7 +254,7 @@ if OCTOAI_API_KEY:
         st.session_state.agent = ReActAgent.from_tools([query_engine_tool], llm=llm, verbose=True, max_turns=10)
 
     
-async def stream_response(agent, user_input):
+   async def stream_response(agent, user_input):
     response = await agent.achat(user_input)
     words = str(response).split()
     full_response = ""
