@@ -14,6 +14,7 @@ from llama_index.core.agent import ReActAgent
 from llama_index.llms.openai_like import OpenAILike
 import tempfile
 import asyncio
+from streamlit.runtime.scriptrunner import add_script_run_ctx
 
 # Load environment variables
 load_dotenv()
@@ -272,6 +273,21 @@ if OCTOAI_API_KEY:
                     st.markdown(f"<div class='bot-message'>{message['content']}</div>", unsafe_allow_html=True)
 
         user_input = st.text_input("Let me know your queries on the chat below...", key="chat_input", max_chars=None)
+
+@st.cache_data
+async def run_async_query(user_input):
+    async def stream_response():
+        response = await st.session_state.agent.achat(user_input)
+        words = str(response).split()
+        full_response = ""
+        for word in words:
+            full_response += word + " "
+            yield full_response
+            await asyncio.sleep(0.05)  # Adjust the delay as needed
+
+    return [chunk async for chunk in stream_response()]
+
+        
         if st.button("Send"):
             if user_input:
                 st.session_state.messages.append({"role": "user", "content": user_input})
@@ -279,25 +295,51 @@ if OCTOAI_API_KEY:
                     with st.empty():
                         st.write("Let me think...")
                         # Simulate streaming response
-                        async def stream_response():
-                            response = st.session_state.agent.chat(user_input)
-                            words = str(response).split()
-                            full_response = ""
-                            for word in words:
-                                full_response += word + " "
-                                yield full_response
-                                await asyncio.sleep(0.05)  # Adjust the delay as needed
-
+                         # Run the async function
+                        response_chunks = asyncio.run(run_async_query(user_input))
                         # Display streaming response
                         response_placeholder = st.empty()
-                        for partial_response in asyncio.run(stream_response()):
-                            response_placeholder.markdown(f"<div class='bot-message'>{partial_response}</div>", unsafe_allow_html=True)
-                        
-                        st.session_state.messages.append({"role": "assistant", "content": partial_response})
+                        full_response = ""
+                        for chunk in response_chunks:
+                            full_response = chunk
+                            response_placeholder.markdown(f"<div class='bot-message'>{full_response}</div>", unsafe_allow_html=True)
+                
+                        st.session_state.messages.append({"role": "assistant", "content": full_response})
                 else:
                     st.session_state.messages.append({"role": "assistant", "content": "Please upload documents first to enable the AI assistant."})
-                
+        
                 st.rerun()
+
+
+
+
+
+# Inside your Streamlit app
+if st.button("Send"):
+    if user_input:
+        st.session_state.messages.append({"role": "user", "content": user_input})
+        if st.session_state.agent:
+            with st.empty():
+                st.write("Let me think...")
+                # Run the async function
+                response_chunks = asyncio.run(run_async_query(user_input))
+                
+                # Display streaming response
+                response_placeholder = st.empty()
+                full_response = ""
+                for chunk in response_chunks:
+                    full_response = chunk
+                    response_placeholder.markdown(f"<div class='bot-message'>{full_response}</div>", unsafe_allow_html=True)
+                
+                st.session_state.messages.append({"role": "assistant", "content": full_response})
+        else:
+            st.session_state.messages.append({"role": "assistant", "content": "Please upload documents first to enable the AI assistant."})
+        
+        st.rerun()
+
+
+
+    
 
     # FPSO Visualization at the bottom
     st.markdown("### FPSO Visualization")
