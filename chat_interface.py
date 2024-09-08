@@ -18,7 +18,7 @@ def render_chat_interface(agent):
         if 'messages' not in st.session_state:
             st.session_state.messages = []
 
-        user_input = st.text_input("This is Ataliba here, I am here to help you...", key="chat_input", max_chars=None)
+        user_input = st.text_input("This is Ataliba here, how can I help you...?", key="chat_input", max_chars=None)
 
         if st.button("Send"):
             if user_input:
