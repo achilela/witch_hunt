@@ -1,331 +1,38 @@
 import streamlit as st
-import matplotlib.pyplot as plt
-import matplotlib.patches as patches
-import math
-import matplotlib.transforms as transforms
-import pandas as pd
-import os
-from dotenv import load_dotenv
-from llama_index.core import SimpleDirectoryReader, VectorStoreIndex, StorageContext, load_index_from_storage
-from llama_index.core.tools import QueryEngineTool, ToolMetadata
-from llama_index.embeddings.octoai import OctoAIEmbedding
-from llama_index.core import Settings as LlamaGlobalSettings
-from llama_index.core.agent import ReActAgent
-from llama_index.llms.openai_like import OpenAILike
-import tempfile
-import asyncio
-from streamlit.runtime.scriptrunner import add_script_run_ctx
+from fpso_layout import draw_fpso_layout
+from llama_setup import setup_llama_index, create_react_agent
+from chat_interface import render_chat_interface
+from streamlit_config import set_page_config, apply_custom_css
+from utils import load_environment_variables
 
-# Load environment variables
-load_dotenv()
+def main():
+    load_environment_variables()
+    set_page_config()
+    apply_custom_css()
 
-# FPSO Layout App functions
-def add_rectangle(ax, xy, width, height, **kwargs):
-    rectangle = patches.Rectangle(xy, width, height, **kwargs)
-    ax.add_patch(rectangle)
+    st.sidebar.title('FPSO Units')
+    OCTOAI_API_KEY = st.sidebar.text_input("Enter your OCTOAI API key:", type="password")
 
-def add_chamfered_rectangle(ax, xy, width, height, chamfer, **kwargs):
-    x, y = xy
-    coords = [
-        (x + chamfer, y),
-        (x + width - chamfer, y),
-        (x + width, y + chamfer),
-        (x + width, y + height - chamfer),
-        (x + width - chamfer, y + height),
-        (x + chamfer, y + height),
-        (x, y + height - chamfer),
-        (x, y + chamfer)
-    ]
-    polygon = patches.Polygon(coords, closed=True, **kwargs)
-    ax.add_patch(polygon)
-
-def add_hexagon(ax, xy, radius, **kwargs):
-    x, y = xy
-    vertices = [(x + radius * math.cos(2 * math.pi * n / 6), 
-                 y + radius * math.sin(2 * math.pi * n / 6)) 
-                for n in range(6)]
-    hexagon = patches.Polygon(vertices, closed=True, **kwargs)
-    ax.add_patch(hexagon)
-
-def add_fwd(ax, xy, width, height, **kwargs):
-    x, y = xy
-    top_width = width * 0.80
-    coords = [
-        (0, 0),
-        (width, 0),
-        (width - (width - top_width) / 2, height),
-        ((width - top_width) / 2, height)
-    ]
-    trapezoid = patches.Polygon(coords, closed=True, **kwargs)
-    t = transforms.Affine2D().rotate_deg(90).translate(x, y)
-    trapezoid.set_transform(t + ax.transData)
-    ax.add_patch(trapezoid)
-    text_t = transforms.Affine2D().rotate_deg(90).translate(x + height/2, y + width/2)
-    ax.text(0, -1, "FWD", ha='center', va='center', fontsize=7, weight='bold', transform=text_t + ax.transData)
-
-def draw_clv(ax):
-    modules = {
-        'M120': (0.75, 2), 'M121': (0.5, 3), 'M122': (0.5, 4), 'M123': (0.5, 5),
-        'M124': (0.5, 6), 'M125': (0.5, 7), 'M126': (0.5, 8), 'M110': (1.75, 2),
-        'M111': (2, 3), 'M112': (2, 4), 'M113': (2, 5), 'M114': (2, 6),
-        'M115': (2, 7), 'M116': (2, 8)
-    }
-    racks = {
-        'P-RACK 141': (1.5, 3), 'P-RACK 142': (1.5, 4), 'P-RACK 143': (1.5, 5),
-        'P-RACK 144': (1.5, 6), 'P-RACK 145': (1.5, 7), 'P-RACK 146': (1.5, 8)
-    }
-    flare = {'FL': (0.5, 9)}
-    living_quarters = {'LQ': (0.5, 1)}
-    hexagons = {'HELIDECK': (2.75, 1)}
-    fwd = {'FWD': (0.5, 9.5)}
-
-    for module, (row, col) in modules.items():
-        if module == 'M110':
-            height, y_position, text_y = 1.25, row, row + 0.5
-        elif module == 'M120':
-            height, y_position, text_y = 1.25, row - 0.25, row + 0.25
-        else:
-            height, y_position, text_y = 1, row, row + 0.5
-        add_chamfered_rectangle(ax, (col, y_position), 1, height, 0.1, edgecolor='black', facecolor='white')
-        ax.text(col + 0.5, text_y, module, ha='center', va='center', fontsize=7, weight='bold')
-
-    for rack, (row, col) in racks.items():
-        add_chamfered_rectangle(ax, (col, row), 1, 0.5, 0.05, edgecolor='black', facecolor='white')
-        ax.text(col + 0.5, row + 0.25, rack, ha='center', va='center', fontsize=7, weight='bold')
-
-    for flare, (row, col) in flare.items():
-        add_chamfered_rectangle(ax, (col, row), 0.5, 2.5, 0.1, edgecolor='black', facecolor='white')
-        ax.text(col + 0.25, row + 1.25, flare, ha='center', va='center', fontsize=7, weight='bold')
-
-    for living_quarter, (row, col) in living_quarters.items():
-        add_rectangle(ax, (col, row), 1, 2.5, edgecolor='black', facecolor='white')
-        ax.text(col + 0.5, row + 1.25, living_quarter, ha='center', va='center', fontsize=7, rotation=90, weight='bold')
-
-    for hexagon, (row, col) in hexagons.items():
-        add_hexagon(ax, (col, row), 0.60, edgecolor='black', facecolor='white')
-        ax.text(col, row, hexagon, ha='center', va='center', fontsize=7, weight='bold')
-
-    for fwd_module, (row, col) in fwd.items():
-        add_fwd(ax, (col, row), 2.5, -1, edgecolor='black', facecolor='white')
-
-def draw_paz(ax):
-    ax.text(6, 1.75, "PAZ Layout\n(Not implemented)", ha='center', va='center', fontsize=16, weight='bold')
-
-def draw_dal(ax):
-    ax.text(6, 1.75, "DAL Layout\n(Not implemented)", ha='center', va='center', fontsize=16, weight='bold')
-
-def draw_gir(ax):
-    ax.text(6, 1.75, "GIR Layout\n(Not implemented)", ha='center', va='center', fontsize=16, weight='bold')
-
-# Streamlit app
-st.set_page_config(page_title="B17 - FPSO Units", layout="wide")
-
-# Custom CSS
-st.markdown("""
-<style>
-    .chat-container {
-        border: 1px solid #4CAF50;
-        border-radius: 5px;
-        padding: 10px;
-        background-color: #1e1e1e;
-        color: #c9d1d9;
-        height: 300px;
-        overflow-y: auto;
-        margin-bottom: 10px;
-    }
-    .user-message {
-        background-color: #2f3136;
-        color: #ffffff;
-        border-radius: 15px;
-        padding: 8px 12px;
-        margin: 5px 0;
-        max-width: 70%;
-        align-self: flex-end;
-    }
-    .bot-message {
-        background-color: #40444b;
-        color: #ffffff;
-        border-radius: 15px;
-        padding: 8px 12px;
-        margin: 5px 0;
-        max-width: 70%;
-        align-self: flex-start;
-    }
-    .stTextInput input {
-        background-color: #262626;
-        color: #ffffff;
-        border: 1px solid #4CAF50;
-        border-radius: 20px;
-    }
-    .stButton button {
-        background-color: #4CAF50;
-        color: #ffffff;
-        border-radius: 20px;
-    }
-    /* Increase chat input width */
-    .chat-input {
-        width: 100% !important;
-    }
-</style>
-""", unsafe_allow_html=True)
-
-# Sidebar
-st.sidebar.title('FPSO Units')
-
-# Add input for OCTOAI API key in the sidebar
-OCTOAI_API_KEY = st.sidebar.text_input("Enter your OCTOAI API key:", type="password")
-
-# Only proceed with LlamaIndex setup if API key is provided
-if OCTOAI_API_KEY:
-    # Set up LlamaIndex
-    LlamaGlobalSettings.embed_model = OctoAIEmbedding(api_key=OCTOAI_API_KEY)
-
-    llm = OpenAILike(
-        model="meta-llama-3.1-70b-instruct",
-        api_base="https://text.octoai.run/v1",
-        api_key=OCTOAI_API_KEY,
-        context_window=40000,
-        is_function_calling_model=True,
-        is_chat_model=True,
-    )
-
-    # Rest of the sidebar
-    selected_unit = st.sidebar.selectbox('Select FPSO Unit', ['CLV', 'PAZ', 'DAL', 'GIR'])
-
-    if st.sidebar.button('Let me handle your SAP Data'):
-        st.sidebar.success('SAP data pre-processing started. This may take a few moments.')
-        # Placeholder for SAP data processing
-        st.sidebar.success('SAP data pre-processing completed!')
-
-    # File uploader for documents
-    uploaded_files = st.sidebar.file_uploader("Upload PDF Documents", type=['pdf'], accept_multiple_files=True)
-
-    # Initialize session state for indexes and agent
-    if 'storage_context' not in st.session_state:
-        st.session_state.storage_context = StorageContext.from_defaults()
-    if 'agent' not in st.session_state:
-        st.session_state.agent = None
-
-    # Load Documents
-    try:
-        storage_context = StorageContext.from_defaults(persist_dir="./storage")
-        index = load_index_from_storage(storage_context)
-        index_loaded = True
-    except:
-        index_loaded = False
-
-    # Process uploaded files and create indexes
-    if uploaded_files and not index_loaded:
-        all_docs = []
-        for uploaded_file in uploaded_files:
-            with tempfile.NamedTemporaryFile(delete=False, suffix='.pdf') as temp_file:
-                temp_file.write(uploaded_file.getvalue())
-                temp_file_path = temp_file.name
-
-            # Create index from the uploaded document
-            docs = SimpleDirectoryReader(input_files=[temp_file_path]).load_data()
-            all_docs.extend(docs)
-
-            os.unlink(temp_file_path)  # Remove the temporary file
-
-        # Create index from all documents
-        index = VectorStoreIndex.from_documents(all_docs, storage_context=st.session_state.storage_context, show_progress=False)
-
-        # Persist index
-        st.session_state.storage_context.persist(persist_dir="./storage")
-        st.sidebar.success(f"{len(uploaded_files)} document(s) processed and indexed.")
-
-        index_loaded = True
-
-    if index_loaded:
-        # Create query engine
-        query_engine = index.as_query_engine(similarity_top_k=3, llm=llm)
-
-        # Create query engine tool
-        query_engine_tool = QueryEngineTool(
-            query_engine=query_engine,
-            metadata=ToolMetadata(
-                name="document_index",
-                description="Provides information from the uploaded documents. Use a detailed plain text question as input to the tool."
-            )
-        )
-
-        # Create or update the ReActAgent
-        st.session_state.agent = ReActAgent.from_tools([query_engine_tool], llm=llm, verbose=True, max_turns=10)
-
-    async def stream_response(agent, user_input):
-        response = await agent.achat(user_input)
-        words = str(response).split()
-        full_response = ""
-        for word in words:
-            full_response += word + " "
-            yield full_response
-            await asyncio.sleep(0.01)  # Increased speed: reduced delay from 0.05 to 0.01
-
-    # Main content
-    # Chat interface at the top center
-    
-    st.markdown("<h3 style='text-align: center; font-size: 20px; font-weight: normal;'>Methods Engineer</h3>", unsafe_allow_html=True)
-
-
-    col1, col2, col3 = st.columns([1, 3, 1])
-    with col2:
-        if 'messages' not in st.session_state:
-            st.session_state.messages = []
-
-        user_input = st.text_input("This is Ataliba here, I am here to help you...", key="chat_input", max_chars=None)
-
-        if st.button("Send"):
-            if user_input:
-                st.session_state.messages.append({"role": "user", "content": user_input})
-                if st.session_state.agent:
-                    with st.empty():
-                        st.write("Let me think...")
-                        
-                        # Use asyncio.run to execute the coroutine
-                        async def run_stream():
-                            response_placeholder = st.empty()
-                            full_response = ""
-                            async for chunk in stream_response(st.session_state.agent, user_input):
-                                full_response = chunk
-                                response_placeholder.markdown(f"<div class='bot-message'>{full_response}</div>", unsafe_allow_html=True)
-                            return full_response
-
-                        full_response = asyncio.run(run_stream())
-                        st.session_state.messages.append({"role": "assistant", "content": full_response})
-                else:
-                    st.session_state.messages.append({"role": "assistant", "content": "Please upload documents first to enable the AI assistant."})
-                
-                st.rerun()
-
-        # Display only the current interaction
-        chat_container = st.container()
-        with chat_container:
-            if len(st.session_state.messages) > 1:
-                st.markdown(f"<div class='user-message'>{st.session_state.messages[-2]['content']}</div>", unsafe_allow_html=True)
-            if len(st.session_state.messages) > 0 and st.session_state.messages[-1]['role'] == 'assistant':
-                st.markdown(f"<div class='bot-message'>{st.session_state.messages[-1]['content']}</div>", unsafe_allow_html=True)
+    if OCTOAI_API_KEY:
+        setup_llama_index(OCTOAI_API_KEY)
         
-    
-    # FPSO Visualization at the bottom
-    st.markdown("### FPSO Visualization")
-    fig, ax = plt.subplots(figsize=(12, 8))
-    ax.set_xlim(0, 12)
-    ax.set_ylim(0, 3.5)
-    ax.set_aspect('equal')
-    ax.grid(False)
-    ax.set_facecolor('#E6F3FF')
+        selected_unit = st.sidebar.selectbox('Select FPSO Unit', ['CLV', 'PAZ', 'DAL', 'GIR'])
 
-    if selected_unit == 'CLV':
-        draw_clv(ax)
-    elif selected_unit == 'PAZ':
-        draw_paz(ax)
-    elif selected_unit == 'DAL':
-        draw_dal(ax)
-    elif selected_unit == 'GIR':
-        draw_gir(ax)
+        if st.sidebar.button('Let me handle your SAP Data'):
+            st.sidebar.success('SAP data pre-processing started. This may take a few moments.')
+            # Placeholder for SAP data processing
+            st.sidebar.success('SAP data pre-processing completed!')
 
-    st.pyplot(fig)
+        uploaded_files = st.sidebar.file_uploader("Upload PDF Documents", type=['pdf'], accept_multiple_files=True)
 
-else:
-    st.warning("Please enter your OCTOAI API key in the sidebar to use the app.")
+        agent = create_react_agent(uploaded_files)
+
+        render_chat_interface(agent)
+        
+        st.markdown("### FPSO Visualization")
+        draw_fpso_layout(selected_unit)
+    else:
+        st.warning("Please enter your OCTOAI API key in the sidebar to use the app.")
+
+if __name__ == "__main__":
+    main()
