@@ -1,4 +1,4 @@
- import streamlit as st
+import streamlit as st
 from fpso_layout import draw_fpso_layout
 from llama_setup import setup_llama_index, create_react_agent
 from chat_interface import render_chat_interface
