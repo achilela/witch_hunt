@@ -1,7 +1,8 @@
 import streamlit as st
 import os
 import tempfile
-from llama_index import SimpleDirectoryReader, VectorStoreIndex, StorageContext, load_index_from_storage
+from llama_index.core import VectorStoreIndex, SimpleDirectoryReader, StorageContext, load_index_from_storage
+#from llama_index import SimpleDirectoryReader, VectorStoreIndex, StorageContext, load_index_from_storage
 from llama_index.tools import QueryEngineTool, ToolMetadata
 from llama_index.embeddings import OctoAIEmbedding
 from llama_index import Settings
