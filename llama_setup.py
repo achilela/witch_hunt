@@ -1,13 +1,17 @@
 import streamlit as st
 import os
 import tempfile
-from llama_index.core import VectorStoreIndex, SimpleDirectoryReader, StorageContext, load_index_from_storage
-#from llama_index import SimpleDirectoryReader, VectorStoreIndex, StorageContext, load_index_from_storage
+from llama_index.core import (
+    SimpleDirectoryReader,
+    VectorStoreIndex,
+    StorageContext,
+    load_index_from_storage,
+)
 from llama_index.core.tools import QueryEngineTool, ToolMetadata
-from llama_index.embeddings import OctoAIEmbedding
-from llama_index.core import Settings
+from llama_index.embeddings.octoai import OctoAIEmbedding
+from llama_index.core import Settings as LlamaGlobalSettings
 from llama_index.core.agent import ReActAgent
-from llama_index.core.llms import OpenAILike
+from llama_index.llms.openai_like import OpenAILike
 
 def setup_llama_index(OCTOAI_API_KEY):
     Settings.embed_model = OctoAIEmbedding(api_key=OCTOAI_API_KEY)
