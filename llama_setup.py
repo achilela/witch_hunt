@@ -14,7 +14,7 @@ from llama_index.core.agent import ReActAgent
 from llama_index.llms.openai_like import OpenAILike
 
 def setup_llama_index(OCTOAI_API_KEY):
-    Settings.embed_model = OctoAIEmbedding(api_key=OCTOAI_API_KEY)
+    LlamaGlobalSettings.embed_model = OctoAIEmbedding(api_key=OCTOAI_API_KEY)
 
     llm = OpenAILike(
         model="meta-llama-3.1-70b-instruct",
