@@ -26,7 +26,7 @@ def main():
 
     agent = create_react_agent(uploaded_files)
 
-   _chat_interface(agent)
+    _chat_interface(agent)
     
     st.markdown("### FPSO Visualization")
     draw_fpso_layout(selected_unit)
