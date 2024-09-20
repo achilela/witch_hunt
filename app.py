@@ -1,50 +1,52 @@
-import streamlit as st
-import asyncio
+from llama_setup import setup_llama_index, create_react_agent
+from chat_interface import render_chat_interface
+from streamlit_config import set_page_config, apply_custom_css
+from utils import load_environment_variables
+# Directly set the OCTOAI_API_KEY here. Remember to remove this or secure it before sharing or deploying the code.
+#OCTOAI_API_KEY = "eyJhbGciOiJSUzI1NiIsInR5cCI6IkpXVCIsImtpZCI6IjNkMjMzOTQ5In0.eyJzdWIiOiJjOTY4MTlhOS05MDRiLTQ2MGItYWVhZS00MDVlMTI1OTAzM2EiLCJ0eXBlIjoidXNlckFjY2Vzc1Rva2VuIiwidGVuYW50SWQiOiI3NTNmNGY4ZC0yNGFmLTRiYTctOTVjMi0wODY1MjJhMDE5OWMiLCJ1c2VySWQiOiIxZGYyY2ZmZC0yYzliLTQ2YTYtOWFlOS0yMzJkZDdhZWY5M2YiLCJhcHBsaWNhdGlvbklkIjoiYTkyNmZlYmQtMjFlYS00ODdiLTg1ZjUtMzQ5NDA5N2VjODMzIiwicm9sZXMiOlsiRkVUQ0gtUk9MRVMtQlktQVBJIl0sInBlcm1pc3Npb25zIjpbIkZFVENILVBFUk1JU1NJT05TLUJZLUFQSSJdLCJhdWQiOiIzZDIzMzk0OS1hMmZiLTRhYjAtYjdlYy00NmY2MjU1YzUxMGUiLCJpc3MiOiJodHRwczovL2lkZW50aXR5Lm9jdG8uYWkiLCJpYXQiOjE3MjY4MTA2NzZ9.Axmgb07O2a4HtsmwgZ_7Wl_rvsvRQggWzuHviulx8kR1EWJ_aZ8CBiYeW2yRrjTlax36LeIIFDY73j_5vb87RWBsBtpAyLMheV7CLoiPQZUeQQLpFlNBMYS-9bn55gjxQCPGsopE2ZtEfSk33f__t-zh3j6Cyq-K2Ukj9wrvDh664iXE2nbpN27HEyKkcId-utgaoxOS2dV1oBsNslWkkcVotmgH-oEk_p41S89FAQNnmXJfY-c2Dat82WiGEfaHFIn_0_wb2vrcEQxdIDtlqFpBnBQAVAmi2qIQgeB9Bn0cjV8qGlN0_HUmGlqrdxnaWjF03ZGcrpLI4nLT1Da4CQ"
 
-async def stream_response(agent, user_input):
-    response = await agent.achat(user_input)
-    words = str(response).split()
-    full_response = ""
-    for word in words:
-        full_response += word + " "
-        yield full_response
-        await asyncio.sleep(0.01)
+def main():
+    load_environment_variables()
+    set_page_config()
+    apply_custom_css()
 
-def render_chat_interface(agent):
-    st.markdown("<h3 style='text-align: center; font-size: 20px; font-weight: normal;'>Methods Engineer</h3>", unsafe_allow_html=True)
+    st.sidebar.title('FPSO Units')
+    
+    OCTOAI_API_KEY = st.sidebar.text_input("Enter your OCTOAI API key:", type="password")
 
-    col1, col2, col3 = st.columns([1, 3, 1])
-    with col2:
-        if 'messages' not in st.session_state:
-            st.session_state.messages = []
+    if OCTOAI_API_KEY:
+        setup_llama_index(OCTOAI_API_KEY)
+        
+        selected_unit = st.sidebar.selectbox('Select FPSO Unit', ['CLV', 'PAZ', 'DAL', 'GIR'])
+    setup_llama_index(OCTOAI_API_KEY)
+    
+    selected_unit = st.sidebar.selectbox('Select FPSO Unit', ['CLV', 'PAZ', 'DAL', 'GIR'])
 
-        user_input = st.text_input("This is Ataliba here, how can I help you...?", key="chat_input", max_chars=None)
+        if st.sidebar.button('Let me handle your SAP Data'):
+            st.sidebar.success('SAP data pre-processing started. This may take a few moments.')
+            # Placeholder for SAP data processing
+            st.sidebar.success('SAP data pre-processing completed!')
+    if st.sidebar.button('Let me handle your SAP Data'):
+        st.sidebar.success('SAP data pre-processing started. This may take a few moments.')
+        # Placeholder for SAP data processing
+        st.sidebar.success('SAP data pre-processing completed!')
 
-        if st.button("Send"):
-            if user_input:
-                st.session_state.messages.append({"role": "user", "content": user_input})
-                if agent:
-                    with st.empty():
-                        st.write("Let me think...")
-                        
-                        async def run_stream():
-                            response_placeholder = st.empty()
-                            full_response = ""
-                            async for chunk in stream_response(agent, user_input):
-                                full_response = chunk
-                                response_placeholder.markdown(f"<div class='bot-message'>{full_response}</div>", unsafe_allow_html=True)
-                            return full_response
+        uploaded_files = st.sidebar.file_uploader("Upload PDF Documents", type=['pdf'], accept_multiple_files=True)
+    uploaded_files = st.sidebar.file_uploader("Upload PDF Documents", type=['pdf'], accept_multiple_files=True)
 
-                        full_response = asyncio.run(run_stream())
-                        st.session_state.messages.append({"role": "assistant", "content": full_response})
-                else:
-                    st.session_state.messages.append({"role": "assistant", "content": "Please upload documents first to enable the AI assistant."})
-                
-                st.rerun()
+        agent = create_react_agent(uploaded_files)
+    agent = create_react_agent(uploaded_files)
 
-        chat_container = st.container()
-        with chat_container:
-            if len(st.session_state.messages) > 1:
-                st.markdown(f"<div class='user-message'>{st.session_state.messages[-2]['content']}</div>", unsafe_allow_html=True)
-            if len(st.session_state.messages) > 0 and st.session_state.messages[-1]['role'] == 'assistant':
-                st.markdown(f"<div class='bot-message'>{st.session_state.messages[-1]['content']}</div>", unsafe_allow_html=True)
+        render_chat_interface(agent)
+        
+        st.markdown("### FPSO Visualization")
+        draw_fpso_layout(selected_unit)
+    else:
+        st.warning("Please enter your OCTOAI API key in the sidebar to use the app.")
+   _chat_interface(agent)
+    
+    st.markdown("### FPSO Visualization")
+    draw_fpso_layout(selected_unit)
+
+if __name__ == "__main__":
+    main()
