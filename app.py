@@ -34,5 +34,6 @@ if OCTOAI_API_KEY:
     draw_fpso_layout(selected_unit)
 else:
     st.warning("Please enter your OCTOAI API key in the sidebar to use the app.")
-if name == "main":
-   main()
+    
+if __name__ == "__main__":
+    main()
