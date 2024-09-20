@@ -93,13 +93,13 @@ def draw_clv(ax):
         add_fwd(ax, (col, row), 2.5, -1, edgecolor='black', facecolor='white')
 
 def draw_paz(ax):
-    ax.text(6, 1.75, "PAZ Layout\n(Not implemented)", ha='center', va='center', fontsize=16, weight='bold')
+    ax.text(6, 1.75, "PAZ Layout\n(Implementation work in progress...)", ha='center', va='center', fontsize=16, weight='bold')
 
 def draw_dal(ax):
-    ax.text(6, 1.75, "DAL Layout\n(Not implemented)", ha='center', va='center', fontsize=16, weight='bold')
+    ax.text(6, 1.75, "DAL Layout\n(Implementation work in progress...)", ha='center', va='center', fontsize=16, weight='bold')
 
 def draw_gir(ax):
-    ax.text(6, 1.75, "GIR Layout\n(Not implemented)", ha='center', va='center', fontsize=16, weight='bold')
+    ax.text(6, 1.75, "GIR Layout\n(Implementation work in progress...)", ha='center', va='center', fontsize=16, weight='bold')
 
 def draw_fpso_layout(selected_unit):
     fig, ax = plt.subplots(figsize=(12, 8))
