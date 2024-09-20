@@ -6,7 +6,6 @@ from streamlit_config import set_page_config, apply_custom_css
 from utils import load_environment_variables
 
 def main():
-    load_environment_variables()
     set_page_config()
     apply_custom_css()
 
