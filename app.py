@@ -24,7 +24,7 @@ def main():
             # Placeholder for SAP data processing
             st.sidebar.success('SAP data pre-processing completed!')
 
-        uploaded = st.sidebar.file_uploader("Upload PDF Documents", type=['pdf'], accept_multiple_files=True)
+        uploaded_files = st.sidebar.file_uploader("Upload PDF Documents", type=['pdf'], accept_multiple_files=True)
 
         agent = create_react_agent(uploaded_files)
 
