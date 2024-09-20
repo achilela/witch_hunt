@@ -35,4 +35,4 @@ if OCTOAI_API_KEY:
 else:
     st.warning("Please enter your OCTOAI API key in the sidebar to use the app.")
 if name == "main":
-    main()
+   main()
