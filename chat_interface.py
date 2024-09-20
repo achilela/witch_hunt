@@ -1,4 +1,4 @@
-import streamlit as st
+ import streamlit as st
 import asyncio
 
 async def stream_response(agent, user_input):
@@ -13,15 +13,14 @@ async def stream_response(agent, user_input):
 def render_chat_interface(agent):
     st.markdown("<h3 style='text-align: center; font-size: 20px; font-weight: normal;'>Methods Engineer</h3>", unsafe_allow_html=True)
 
-    # Using form for integrated input and submit
-    with st.form(key='chat_form'):
-        col1, col2 = st.columns([4, 1])
-        with col1:
-            user_input = st.text_input("This is Ataliba here, how can I help you...?", key="chat_input", max_chars=None)
-        with col2:
-            submit = st.form_submit_button("Send")
+    col1, col2, col3 = st.columns([1, 3, 1])
+    with col2:
+        if 'messages' not in st.session_state:
+            st.session_state.messages = []
 
-        if submit_button:
+        user_input = st.text_input("This is Ataliba here, how can I help you...?", key="chat_input", max_chars=None)
+
+        if st.button("Send"):
             if user_input:
                 st.session_state.messages.append({"role": "user", "content": user_input})
                 if agent:
@@ -43,10 +42,9 @@ def render_chat_interface(agent):
                 
                 st.rerun()
 
-    # Chat display
-    chat_container = st.container()
-    with chat_container:
-        if len(st.session_state.messages) > 1:
-            st.markdown(f"<div class='user-message'>{st.session_state.messages[-2]['content']}</div>", unsafe_allow_html=True)
-        if len(st.session_state.messages) > 0 and st.session_state.messages[-1]['role'] == 'assistant':
-            st.markdown(f"<div class='bot-message'>{st.session_state.messages[-1]['content']}</div>", unsafe_allow_html=True)
+        chat_container = st.container()
+        with chat_container:
+            if len(st.session_state.messages) > 1:
+                st.markdown(f"<div class='user-message'>{st.session_state.messages[-2]['content']}</div>", unsafe_allow_html=True)
+            if len(st.session_state.messages) > 0 and st.session_state.messages[-1]['role'] == 'assistant':
+                st.markdown(f"<div class='bot-message'>{st.session_state.messages[-1]['content']}</div>", unsafe_allow_html=True)
