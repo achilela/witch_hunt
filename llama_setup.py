@@ -17,7 +17,7 @@ def setup_llama_index(OCTOAI_API_KEY):
     LlamaGlobalSettings.embed_model = OctoAIEmbedding(api_key=OCTOAI_API_KEY)
 
     llm = OpenAILike(
-        model="Qwen/Qwen2.5-7B-Instruct", #"meta-llama-3.1-70b-instruct",
+        model="meta-llama-3.1-70b-instruct",
         api_base="https://text.octoai.run/v1",
         api_key=OCTOAI_API_KEY,
         context_window=40000,
