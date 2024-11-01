@@ -15,7 +15,7 @@ from llama_index.llms.openai_like import OpenAILike
 
 def setup_llama_index(OCTOAI_API_KEY):
     LlamaGlobalSettings.embed_model = OctoAIEmbedding(api_key=OCTOAI_API_KEY)
-
+# OctoAI is now part of NVIDIA as of Oct 31st 2024
     llm = OpenAILike(
         model="meta-llama-3.1-70b-instruct",
         api_base="https://text.octoai.run/v1",
